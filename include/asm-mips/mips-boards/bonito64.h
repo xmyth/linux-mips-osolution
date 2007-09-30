@@ -31,6 +31,11 @@
 #define BONITO(x) (*(volatile u32 *)((char *)CKSEG1ADDR(BONITO_REG_BASE) + (x)))
 #define BONITO_IRQ_BASE   32
 
+#elif defined(CONFIG_LS2E_DEV_BOARD)
+
+#define BONITO(x) (*(volatile u32 *)((char *)CKSEG1ADDR(BONITO_REG_BASE) + (x)))
+#define BONITO_IRQ_BASE   32
+
 #else
 
 /*

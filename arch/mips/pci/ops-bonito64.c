@@ -32,6 +32,11 @@
 #ifdef CONFIG_LEMOTE_FULONG
 #define CFG_SPACE_REG(offset) (void *)CKSEG1ADDR(BONITO_PCICFG_BASE | (offset))
 #define ID_SEL_BEGIN 11
+
+#elif defined(CONFIG_LS2E_DEV_BOARD)
+#define CFG_SPACE_REG(offset) (void *)CKSEG1ADDR(BONITO_PCICFG_BASE | (offset))
+#define ID_SEL_BEGIN 11
+
 #else
 #define CFG_SPACE_REG(offset) (void *)CKSEG1ADDR(_pcictrl_bonito_pcicfg + (offset))
 #define ID_SEL_BEGIN 10
@@ -77,7 +82,9 @@ static int bonito64_pcibios_config_access(unsigned char access_type,
 	addrp = CFG_SPACE_REG(addr & 0xffff);
 	if (access_type == PCI_ACCESS_WRITE) {
 		writel(cpu_to_le32(*data), addrp);
-#ifndef CONFIG_LEMOTE_FULONG
+#if defined(CONFIG_LEMOTE_FULONG) || defined(CONFIG_LS2E_DEV_BOARD)
+
+#else
 		/* Wait till done */
 		while (BONITO_PCIMSTAT & 0xF);
 #endif

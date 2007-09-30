@@ -194,6 +194,12 @@
 #define  MACH_LEMOTE_FULONG        0
 
 /*
+ * Valid machtype for group ST
+ */
+#define MACH_GROUP_ST			29				
+#define	 MACH_ST_LS2EDEV		0
+
+/*
  * Valid machtype for group PMC-MSP
  */
 #define MACH_GROUP_MSP         26	/* PMC-Sierra MSP boards/CPUs    */
