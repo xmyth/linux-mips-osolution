@@ -33,8 +33,22 @@
 #include <linux/pci.h>
 #include <asm/mips-boards/bonito64.h>
 
+#define LS2EDEV_PCI_IRQA 26
+#define LS2EDEV_PCI_IRQB 27
+#define LS2EDEV_PCI_IRQC 28
+#define LS2EDEV_PCI_IRQD 29
+
+static char irq_pci_tab[][5] __initdata = {
+	        /*      INTA    INTB    INTC    INTD */
+  [12] = {0, LS2EDEV_PCI_IRQA, LS2EDEV_PCI_IRQB, LS2EDEV_PCI_IRQC, LS2EDEV_PCI_IRQD },
+  [13] = {0, LS2EDEV_PCI_IRQB, LS2EDEV_PCI_IRQC, LS2EDEV_PCI_IRQD, LS2EDEV_PCI_IRQA },
+  [14] = {0, LS2EDEV_PCI_IRQC, LS2EDEV_PCI_IRQD, LS2EDEV_PCI_IRQA, LS2EDEV_PCI_IRQB },
+  [15] = {0, LS2EDEV_PCI_IRQA, LS2EDEV_PCI_IRQB, LS2EDEV_PCI_IRQC, LS2EDEV_PCI_IRQD },
+  [16] = {0, LS2EDEV_PCI_IRQA, LS2EDEV_PCI_IRQB, LS2EDEV_PCI_IRQC, LS2EDEV_PCI_IRQD },
+};
+
 /* South bridge slot number is set by the pci probe process */
-static u8 sb_slot = 5;
+static u8 sb_slot = 17;
 
 int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
@@ -52,8 +66,8 @@ int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 			irq = 9;
 			break;
 		}
-	} else {
-		irq = BONITO_IRQ_BASE + 25 + pin;
+	} else if (slot >= 12 && slot <= 16){
+		irq = BONITO_IRQ_BASE + irq_pci_tab[slot][pin];
 	}
 	return irq;
 
