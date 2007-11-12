@@ -36,6 +36,7 @@
 #endif
 
 extern void mips_reboot_setup(void);
+extern void mips_time_init(void);
 extern unsigned long mips_rtc_get_time(void);
 
 #ifdef CONFIG_KGDB
@@ -99,7 +100,7 @@ void __init plat_mem_setup(void)
 	enable_dma(4);
 
 #ifdef CONFIG_KGDB
-	kgdb_config();
+	kgdb_config ();
 #endif
 
 	if (mips_revision_sconid == MIPS_REVISION_SCON_BONITO) {
@@ -108,7 +109,7 @@ void __init plat_mem_setup(void)
 		argptr = prom_getcmdline();
 		if (strstr(argptr, "debug")) {
 			BONITO_BONGENCFG |= BONITO_BONGENCFG_DEBUGMODE;
-			printk("Enabled Bonito debug mode\n");
+			printk ("Enabled Bonito debug mode\n");
 		}
 		else
 			BONITO_BONGENCFG &= ~BONITO_BONGENCFG_DEBUGMODE;
@@ -159,14 +160,14 @@ void __init plat_mem_setup(void)
 		if (pciclock != 33 && !strstr (argptr, "idebus=")) {
 			printk("WARNING: PCI clock is %dMHz, setting idebus\n", pciclock);
 			argptr += strlen(argptr);
-			sprintf(argptr, " idebus=%d", pciclock);
+			sprintf (argptr, " idebus=%d", pciclock);
 			if (pciclock < 20 || pciclock > 66)
-				printk("WARNING: IDE timing calculations will be incorrect\n");
+				printk ("WARNING: IDE timing calculations will be incorrect\n");
 		}
 	}
 #endif
 #ifdef CONFIG_BLK_DEV_FD
-	fd_activate();
+	fd_activate ();
 #endif
 #ifdef CONFIG_VT
 #if defined(CONFIG_VGA_CONSOLE)
@@ -176,7 +177,7 @@ void __init plat_mem_setup(void)
 		0,			/* orig-video-page */
 		0,			/* orig-video-mode */
 		80,			/* orig-video-cols */
-		0, 0, 0,		/* ega_ax, ega_bx, ega_cx */
+		0,0,0,			/* ega_ax, ega_bx, ega_cx */
 		25,			/* orig-video-lines */
 		VIDEO_TYPE_VGAC,	/* orig-video-isVGA */
 		16			/* orig-video-points */
@@ -184,4 +185,7 @@ void __init plat_mem_setup(void)
 #endif
 #endif
 	mips_reboot_setup();
+
+	board_time_init = mips_time_init;
+	rtc_mips_get_time = mips_rtc_get_time;
 }

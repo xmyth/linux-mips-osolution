@@ -24,6 +24,7 @@
 
 #include <asm/bootinfo.h>
 #include <asm/cpu.h>
+#include <asm/div64.h>
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/mipsregs.h>
@@ -35,7 +36,7 @@
 #include <asm/dec/ioasic_addrs.h>
 #include <asm/dec/machtype.h>
 
-unsigned long read_persistent_clock(void)
+static unsigned long dec_rtc_get_time(void)
 {
 	unsigned int year, mon, day, hour, min, sec, real_year;
 	unsigned long flags;
@@ -74,13 +75,13 @@ unsigned long read_persistent_clock(void)
 }
 
 /*
- * In order to set the CMOS clock precisely, rtc_mips_set_mmss has to
+ * In order to set the CMOS clock precisely, dec_rtc_set_mmss has to
  * be called 500 ms after the second nowtime has started, because when
  * nowtime is written into the registers of the CMOS clock, it will
  * jump to the next second precisely 500 ms later.  Check the Dallas
  * DS1287 data sheet for details.
  */
-int rtc_mips_set_mmss(unsigned long nowtime)
+static int dec_rtc_set_mmss(unsigned long nowtime)
 {
 	int retval = 0;
 	int real_seconds, real_minutes, cmos_minutes;
@@ -139,6 +140,7 @@ int rtc_mips_set_mmss(unsigned long nowtime)
 	return retval;
 }
 
+
 static int dec_timer_state(void)
 {
 	return (CMOS_READ(RTC_REG_C) & RTC_PF) != 0;
@@ -159,8 +161,11 @@ static cycle_t dec_ioasic_hpt_read(void)
 }
 
 
-void __init plat_time_init(void)
+void __init dec_time_init(void)
 {
+	rtc_mips_get_time = dec_rtc_get_time;
+	rtc_mips_set_mmss = dec_rtc_set_mmss;
+
 	mips_timer_state = dec_timer_state;
 	mips_timer_ack = dec_timer_ack;
 

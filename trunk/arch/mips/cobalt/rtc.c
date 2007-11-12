@@ -20,7 +20,6 @@
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
-#include <linux/mc146818rtc.h>
 #include <linux/platform_device.h>
 
 static struct resource cobalt_rtc_resource[] __initdata = {
@@ -30,8 +29,8 @@ static struct resource cobalt_rtc_resource[] __initdata = {
 		.flags	= IORESOURCE_IO,
 	},
 	{
-		.start	= RTC_IRQ,
-		.end	= RTC_IRQ,
+		.start	= 8,
+		.end	= 8,
 		.flags	= IORESOURCE_IRQ,
 	},
 };

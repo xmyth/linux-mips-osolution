@@ -58,13 +58,13 @@ void __init plat_timer_setup(struct irqaction *irq)
 	setup_irq(MIPS_CPU_IRQ_BASE + 7, irq);
 }
 
-void __init plat_time_init(void)
+static void __init loongson2e_time_init(void)
 {
 	/* setup mips r4k timer */
 	mips_hpt_frequency = cpu_clock_freq / 2;
 }
 
-unsigned long read_persistent_clock(void)
+static unsigned long __init mips_rtc_get_time(void)
 {
 	return mc146818_get_cmos_time();
 }
@@ -88,6 +88,9 @@ void __init plat_mem_setup(void)
 	set_io_port_base(PTR_PAD(0xbfd00000));
 
 	mips_reboot_setup();
+
+	board_time_init = loongson2e_time_init;
+	rtc_mips_get_time = mips_rtc_get_time;
 
 	__wbflush = wbflush_loongson2e;
 

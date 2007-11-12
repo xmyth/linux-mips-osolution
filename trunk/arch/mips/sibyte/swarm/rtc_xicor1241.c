@@ -115,8 +115,7 @@ int xicor_set_time(unsigned long t)
 	int tmp;
 	unsigned long flags;
 
-	rtc_time_to_tm(t, &tm);
-	tm.tm_year += 1900;
+	to_tm(t, &tm);
 
 	spin_lock_irqsave(&rtc_lock, flags);
 	/* unlock writes to the CCR */

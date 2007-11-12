@@ -34,7 +34,6 @@ struct smtc_ipi {
 
 #define LINUX_SMP_IPI 1
 #define SMTC_CLOCK_TICK 2
-#define IRQ_AFFINITY_IPI 3
 
 /*
  * A queue of IPI messages

@@ -136,6 +136,7 @@ void __init prom_init(void)
 #	error 64 bit support not implemented
 #endif /* CONFIG_64BIT */
 
+	mips_machgroup = MACH_GROUP_TITAN;
 	mips_machtype = MACH_TITAN_EXCITE;
 }
 

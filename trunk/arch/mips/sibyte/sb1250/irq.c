@@ -28,7 +28,6 @@
 #include <asm/errno.h>
 #include <asm/signal.h>
 #include <asm/system.h>
-#include <asm/time.h>
 #include <asm/io.h>
 
 #include <asm/sibyte/sb1250_regs.h>
@@ -259,7 +258,7 @@ int sb1250_steal_irq(int irq)
 	if (irq >= SB1250_NR_IRQS)
 		return -EINVAL;
 
-	spin_lock_irqsave(&desc->lock, flags);
+	spin_lock_irqsave(&desc->lock,flags);
 	/* Don't allow sharing at all for these */
 	if (desc->action != NULL)
 		retval = -EBUSY;
@@ -267,7 +266,7 @@ int sb1250_steal_irq(int irq)
 		desc->action = &sb1250_dummy_action;
 		desc->depth = 0;
 	}
-	spin_unlock_irqrestore(&desc->lock, flags);
+	spin_unlock_irqrestore(&desc->lock,flags);
 	return 0;
 }
 
@@ -381,8 +380,8 @@ void __init arch_init_irq(void)
 
 #include <linux/delay.h>
 
-#define duart_out(reg, val)     csr_out32(val, IOADDR(A_DUART_CHANREG(kgdb_port, reg)))
-#define duart_in(reg)           csr_in32(IOADDR(A_DUART_CHANREG(kgdb_port, reg)))
+#define duart_out(reg, val)     csr_out32(val, IOADDR(A_DUART_CHANREG(kgdb_port,reg)))
+#define duart_in(reg)           csr_in32(IOADDR(A_DUART_CHANREG(kgdb_port,reg)))
 
 static void sb1250_kgdb_interrupt(void)
 {
@@ -400,44 +399,17 @@ static void sb1250_kgdb_interrupt(void)
 
 #endif 	/* CONFIG_KGDB */
 
-static inline void sb1250_timer_interrupt(void)
-{
-	int cpu = smp_processor_id();
-	int irq = K_INT_TIMER_0 + cpu;
-
-	irq_enter();
-	kstat_this_cpu.irqs[irq]++;
-
-	write_seqlock(&xtime_lock);
-
-	/* ACK interrupt */
-	____raw_writeq(M_SCD_TIMER_ENABLE | M_SCD_TIMER_MODE_CONTINUOUS,
-		       IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_CFG)));
-
-	/*
-	 * call the generic timer interrupt handling
-	 */
-	do_timer(1);
-
-	write_sequnlock(&xtime_lock);
-
-	/*
-	 * In UP mode, we call local_timer_interrupt() to do profiling
-	 * and process accouting.
-	 *
-	 * In SMP mode, local_timer_interrupt() is invoked by appropriate
-	 * low-level local timer interrupt handler.
-	 */
-	local_timer_interrupt(irq);
-
-	irq_exit();
-}
-
+extern void sb1250_timer_interrupt(void);
 extern void sb1250_mailbox_interrupt(void);
 
 asmlinkage void plat_irq_dispatch(void)
 {
 	unsigned int pending;
+
+#ifdef CONFIG_SIBYTE_SB1250_PROF
+	/* Set compare to count to silence count/compare timer interrupts */
+	write_c0_compare(read_c0_count());
+#endif
 
 	/*
 	 * What a pain. We have to be really careful saving the upper 32 bits
@@ -451,9 +423,13 @@ asmlinkage void plat_irq_dispatch(void)
 
 	pending = read_c0_cause() & read_c0_status() & ST0_IM;
 
-	if (pending & CAUSEF_IP7) /* CPU performance counter interrupt */
-		do_IRQ(MIPS_CPU_IRQ_BASE + 7);
-	else if (pending & CAUSEF_IP4)
+#ifdef CONFIG_SIBYTE_SB1250_PROF
+	if (pending & CAUSEF_IP7) /* Cpu performance counter interrupt */
+		sbprof_cpu_intr();
+	else
+#endif
+
+	if (pending & CAUSEF_IP4)
 		sb1250_timer_interrupt();
 
 #ifdef CONFIG_SMP

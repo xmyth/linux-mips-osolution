@@ -7,6 +7,7 @@
 /*
  * Prototypes and macros
  */
+extern void vdma_init(void);
 extern unsigned long vdma_alloc(unsigned long paddr, unsigned long size);
 extern int vdma_free(unsigned long laddr);
 extern int vdma_remap(unsigned long laddr, unsigned long paddr,
