@@ -126,6 +126,7 @@ void __init prom_init(void)
 		env++;
 	}
 
+	mips_machgroup = MACH_GROUP_TITAN;
 	mips_machtype = MACH_TITAN_YOSEMITE;
 
 	prom_grab_secondary();

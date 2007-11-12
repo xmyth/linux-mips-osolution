@@ -1021,7 +1021,7 @@ static int getcwd(char *buff, int size)
 	old_fs = get_fs();
 	set_fs(KERNEL_DS);
 
-	ret = sys_getcwd(buff, size);
+	ret = sys_getcwd(buff,size);
 
 	set_fs(old_fs);
 

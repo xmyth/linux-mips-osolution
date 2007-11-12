@@ -31,6 +31,7 @@
 
 #include <asm/mipsregs.h>
 #include <asm/system.h>
+#include <asm/tx4927/tx4927_mips.h>
 
 u8 getDebugChar(void)
 {
