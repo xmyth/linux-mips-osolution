@@ -307,6 +307,13 @@ load-$(CONFIG_LS2E_DEV_BOARD) +=0xffffffff80200000
 cflags-$(CONFIG_LS2E_DEV_BOARD) += -Iinclude/asm-mips/mach-st
 
 #
+# ST LS2F development board
+#
+core-$(CONFIG_LS2F_DEV_BOARD) +=arch/mips/st/ls2fdev/
+load-$(CONFIG_LS2F_DEV_BOARD) +=0xffffffff80200000
+cflags-$(CONFIG_LS2F_DEV_BOARD) += -Iinclude/asm-mips/mach-st
+
+#
 # For all MIPS, Inc. eval boards
 #
 core-$(CONFIG_MIPS_BOARDS_GEN)	+= arch/mips/mips-boards/generic/
