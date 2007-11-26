@@ -171,38 +171,32 @@
 #define  MACH_TANBAC_TB0229	7	/* TANBAC TB0229 (VR4131DIMM) */
 #define  MACH_NEC_CMBVR4133	8	/* CMB VR4133 Board */
 
+#define MACH_GROUP_HP_LJ	20	/* Hewlett Packard LaserJet	*/
 #define  MACH_HP_LASERJET	1
-
-/*
- * Valid machtype for group LASAT
- */
-#define  MACH_LASAT_100		0	/* Masquerade II/SP100/SP50/SP25 */
-#define  MACH_LASAT_200		1	/* Masquerade PRO/SP200 */
 
 /*
  * Valid machtype for group TITAN
  */
+#define MACH_GROUP_TITAN       22	/* PMC-Sierra Titan		*/
 #define  MACH_TITAN_YOSEMITE	1	/* PMC-Sierra Yosemite		*/
 #define  MACH_TITAN_EXCITE	2	/* Basler eXcite		*/
 
 /*
  * Valid machtype for group NEC EMMA2RH
  */
+#define MACH_GROUP_NEC_EMMA2RH 25	/* NEC EMMA2RH (was 23)		*/
 #define  MACH_NEC_MARKEINS	0	/* NEC EMMA2RH Mark-eins	*/
 
 /*
  * Valid machtype for group LEMOTE
  */
+#define MACH_GROUP_LEMOTE          27
 #define  MACH_LEMOTE_FULONG        0
-
-/*
- * Valid machtype for group ST
- */
-#define	 MACH_ST_LS2EDEV		0
 
 /*
  * Valid machtype for group PMC-MSP
  */
+#define MACH_GROUP_MSP         26	/* PMC-Sierra MSP boards/CPUs    */
 #define MACH_MSP4200_EVAL       0	/* PMC-Sierra MSP4200 Evaluation */
 #define MACH_MSP4200_GW         1	/* PMC-Sierra MSP4200 Gateway demo */
 #define MACH_MSP4200_FPGA       2	/* PMC-Sierra MSP4200 Emulation */
@@ -213,6 +207,12 @@
 
 #define MACH_GROUP_WINDRIVER   28	/* Windriver boards */
 #define MACH_WRPPMC             1
+
+/*
+ * Valid machtype for group ST
+ */
+#define MACH_GROUP_ST          29
+#define  MACH_ST_LS2EDEV        0
 
 #define CL_SIZE			COMMAND_LINE_SIZE
 
