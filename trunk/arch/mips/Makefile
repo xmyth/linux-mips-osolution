@@ -303,7 +303,7 @@ cflags-$(CONFIG_LEMOTE_FULONG) += -Iinclude/asm-mips/mach-lemote
 # ST LS2E development board
 #
 core-$(CONFIG_LS2E_DEV_BOARD) +=arch/mips/st/ls2edev/
-load-$(CONFIG_LS2E_DEV_BOARD) +=0xffffffff80100000
+load-$(CONFIG_LS2E_DEV_BOARD) +=0xffffffff80200000
 cflags-$(CONFIG_LS2E_DEV_BOARD) += -Iinclude/asm-mips/mach-st
 
 #
