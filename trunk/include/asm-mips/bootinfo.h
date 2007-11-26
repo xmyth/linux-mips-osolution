@@ -213,6 +213,7 @@
  */
 #define MACH_GROUP_ST          29
 #define  MACH_ST_LS2EDEV        0
+#define  MACH_ST_LS2FDEV		1
 
 #define CL_SIZE			COMMAND_LINE_SIZE
 
