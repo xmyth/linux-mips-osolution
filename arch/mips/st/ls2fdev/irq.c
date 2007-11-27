@@ -108,9 +108,11 @@ void __init arch_init_irq(void)
 	local_irq_disable();
 
 	/* most bonito irq should be level triggered */
+	/*
 	BONITO_INTEDGE = BONITO_ICU_SYSTEMERR | BONITO_ICU_MASTERERR |
 		BONITO_ICU_RETRYERR | BONITO_ICU_MBOXES;
 	BONITO_INTSTEER = 0;
+	*/
 
 	/*
 	 * Mask out all interrupt by writing "1" to all bit position in

@@ -42,6 +42,8 @@ static char irq_pci_tab[][5] __initdata = {
 	        /*      INTA    INTB    INTC    INTD */
   [5] = {0, LS2FDEV_PCI_IRQA, LS2FDEV_PCI_IRQB, LS2FDEV_PCI_IRQC, 0},
   [7] = {0, LS2FDEV_PCI_IRQB, 0, 0, 0 },
+  [8] = {0, LS2FDEV_PCI_IRQA, LS2FDEV_PCI_IRQB, LS2FDEV_PCI_IRQC, LS2FDEV_PCI_IRQD},
+  [9] = {0, LS2FDEV_PCI_IRQA, 0, 0, 0 }
 };
 
 /* South bridge slot number is set by the pci probe process */
@@ -63,9 +65,12 @@ int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 			irq = 9;
 			break;
 		}
-	} else if (slot >= 5 && slot <= 7){
-		irq = BONITO_IRQ_BASE + irq_pci_tab[slot][pin];
+	} else if (slot >= 5 && slot <= 9){
+		if (irq_pci_tab[slot][pin] != 0)
+			irq = BONITO_IRQ_BASE + irq_pci_tab[slot][pin];
 	}
+
+	printk(KERN_ERR "slot=%d, pin=%d, irq=%d\n",slot, pin, irq);
 	return irq;
 
 }
