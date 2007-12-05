@@ -98,14 +98,14 @@ void __init plat_mem_setup(void)
 
 	add_memory_region(0, (memsize << 20), BOOT_MEM_RAM);
 #ifdef CONFIG_64BIT
-	*(unsigned volatile long long *) 0x900000003ff00010 = 0x0000000080000000; //base
-	*(unsigned volatile long long *) 0x900000003ff00030 = 0xffffffff80000000; //mask
-	*(unsigned volatile long long *) 0x900000003ff00050 = 0; //map
-	
-	if (highmemsize > 0) {
-		//add_memory_region(0x10000000, 0x10000000, BOOT_MEM_RESERVED);	
-		add_memory_region(0x90000000, highmemsize << 20, BOOT_MEM_RAM);
-	}
+//	*(unsigned volatile long long *) 0x900000003ff00010 = 0x0000000080000000; //base
+//	*(unsigned volatile long long *) 0x900000003ff00030 = 0xffffffff80000000; //mask
+//	*(unsigned volatile long long *) 0x900000003ff00050 = 0; //map
+//	
+//	if (highmemsize > 0) {
+//		//add_memory_region(0x10000000, 0x10000000, BOOT_MEM_RESERVED);	
+//		add_memory_region(0x90000000, highmemsize << 20, BOOT_MEM_RAM);
+//	}
 #endif
 
 #ifdef CONFIG_VT

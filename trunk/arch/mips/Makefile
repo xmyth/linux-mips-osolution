@@ -19,7 +19,7 @@ cflags-y :=
 #
 ifdef CONFIG_CPU_LITTLE_ENDIAN
 32bit-tool-prefix	= mipsel-linux-
-64bit-tool-prefix	= mips64el-linux-
+64bit-tool-prefix	= mipsel-linux-
 32bit-bfd		= elf32-tradlittlemips
 64bit-bfd		= elf64-tradlittlemips
 32bit-emul		= elf32ltsmip
