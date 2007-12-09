@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.23.1
-# Mon Nov 26 21:29:14 2007
+# Mon Dec 10 00:15:57 2007
 #
 CONFIG_MIPS=y
 
@@ -15,6 +15,7 @@ CONFIG_MIPS=y
 # CONFIG_MACH_JAZZ is not set
 # CONFIG_LEMOTE_FULONG is not set
 CONFIG_LS2E_DEV_BOARD=y
+# CONFIG_LS2F_DEV_BOARD is not set
 # CONFIG_MIPS_ATLAS is not set
 # CONFIG_MIPS_MALTA is not set
 # CONFIG_MIPS_SEAD is not set
@@ -853,7 +854,7 @@ CONFIG_INPUT_MOUSEDEV_SCREEN_Y=768
 # Input Device Drivers
 #
 CONFIG_INPUT_KEYBOARD=y
-CONFIG_KEYBOARD_ATKBD=m
+CONFIG_KEYBOARD_ATKBD=y
 # CONFIG_KEYBOARD_SUNKBD is not set
 # CONFIG_KEYBOARD_LKKBD is not set
 # CONFIG_KEYBOARD_XTKBD is not set
