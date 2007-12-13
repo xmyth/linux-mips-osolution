@@ -91,12 +91,21 @@ void *snd_malloc_sgbuf_pages(struct device *device,
 		}
 		sgbuf->table[i].buf = tmpb.area;
 		sgbuf->table[i].addr = tmpb.addr;
+#if (defined(CONFIG_LS2E_DEV_BOARD) || defined(CONFIG_LS2F_DEV_BOARD)) && defined(CONFIG_DMA_NONCOHERENT)
+		sgbuf->page_table[i] = virt_to_page(CAC_ADDR(tmpb.area));
+#else
 		sgbuf->page_table[i] = virt_to_page(tmpb.area);
+#endif
 		sgbuf->pages++;
 	}
 
 	sgbuf->size = size;
+
+#if (defined(CONFIG_LS2E_DEV_BOARD) || defined(CONFIG_LS2F_DEV_BOARD)) && defined(CONFIG_DMA_NONCOHERENT)
+	dmab->area = vmap(sgbuf->page_table, sgbuf->pages, VM_MAP | VM_IO, pgprot_noncached(PAGE_KERNEL));
+#else
 	dmab->area = vmap(sgbuf->page_table, sgbuf->pages, VM_MAP, PAGE_KERNEL);
+#endif
 	if (! dmab->area)
 		goto _failed;
 	return dmab->area;

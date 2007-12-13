@@ -3138,7 +3138,11 @@ static struct page *snd_pcm_mmap_data_nopage(struct vm_area_struct *area,
 			return NOPAGE_OOM; /* XXX: is this really due to OOM? */
 	} else {
 		vaddr = runtime->dma_area + offset;
+#if (defined(CONFIG_LS2E_DEV_BOARD) || defined(CONFIG_LS2F_DEV_BOARD)) && defined(CONFIG_DMA_NONCOHERENT)
+    		page = virt_to_page(CAC_ADDR(vaddr));
+#else
 		page = virt_to_page(vaddr);
+#endif
 	}
 	get_page(page);
 	if (type)
@@ -3253,7 +3257,10 @@ static int snd_pcm_mmap(struct file *file, struct vm_area_struct *area)
 	pcm_file = file->private_data;
 	substream = pcm_file->substream;
 	snd_assert(substream != NULL, return -ENXIO);
-
+#if (defined(CONFIG_LS2E_DEV_BOARD) || defined(CONFIG_LS2F_DEV_BOARD)) && defined(CONFIG_DMA_NONCOHERENT)
+	area->vm_page_prot = pgprot_noncached(area->vm_page_prot);
+	area->vm_flags |= (VM_RESERVED | VM_IO);
+#endif
 	offset = area->vm_pgoff << PAGE_SHIFT;
 	switch (offset) {
 	case SNDRV_PCM_MMAP_OFFSET_STATUS:
