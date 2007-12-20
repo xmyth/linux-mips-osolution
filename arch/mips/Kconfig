@@ -175,6 +175,7 @@ config LS2F_DEV_BOARD
 	select GENERIC_HARDIRQS_NO__DO_IRQ
 	select GENERIC_ISA_DMA_SUPPORT_BROKEN
 	select CPU_HAS_WB
+	select SYS_SUPPORTS_APM_EMULATION
 	help
 	  ST LS2F development board based on the Chinese Loongson-2F CPU
 
