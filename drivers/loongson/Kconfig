@@ -1,6 +1,6 @@
 
 menuconfig LOONGSON_DRIVERS
-	bool "Loonson device drivers"
+	bool "Loongson device drivers"
 	depends on LS2F_DEV_BOARD
 	---help---
 	  Say Y here to get to see options for devices used with Loongson
@@ -13,4 +13,6 @@ if LOONGSON_DRIVERS
 config LS_APM_EMU
 	tristate "APM emulation"
 	select APM_EMULATION
+config LS_XGI_MODE
+	tristate "Switch XGI Mode"
 endif
