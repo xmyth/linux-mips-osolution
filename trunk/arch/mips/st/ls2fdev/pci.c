@@ -77,6 +77,7 @@ static void __init ict_pcimap(void)
 	BONITO_PCIBASE1 = 0x0;
 	BONITO(BONITO_REGBASE + 0x50) = 0x8000000C;
 	BONITO(BONITO_REGBASE + 0x54) = 0xFFFFFFFF;
+	BONITO(BONITO_REGBASE + 0x68) = 0x00FE0105;
 }
 
 static int __init pcibios_init(void)
