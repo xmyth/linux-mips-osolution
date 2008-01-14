@@ -15,8 +15,10 @@ static void ls_apm_get_power_status(struct apm_power_info *info)
 
  	//data batter mode; data1 remain capacity; data2 full capacity; data3 charge/discharge current
 
+	info->ac_line_status = APM_AC_ONLINE;
 	info->battery_flag = APM_BATTERY_FLAG_UNKNOWN;
 	info->units = APM_UNITS_MINS;
+	info->battery_status = APM_BATTERY_STATUS_HIGH;
 
 	p = i2c_get_adapter(0);
 
@@ -81,7 +83,8 @@ static void ls_apm_get_power_status(struct apm_power_info *info)
 	}
 	else
 	{
-		info->battery_status = APM_AC_ONLINE;
+		info->ac_line_status = APM_AC_ONLINE;
+		
 		if (data.word & 0x0020)
 		{
 			info->battery_status = APM_BATTERY_STATUS_HIGH;
