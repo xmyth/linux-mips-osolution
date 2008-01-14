@@ -189,7 +189,7 @@ static int vt596_transaction(u8 size)
 		   to frighten the user. */
 		if (!((size == VT596_QUICK && !read) ||
 		      (size == VT596_BYTE && read)))
-			dev_err(&vt596_adapter.dev, "Transaction error!\n");
+			;//dev_err(&vt596_adapter.dev, "Transaction error!\n");
 	}
 
 	/* Resetting status register */
