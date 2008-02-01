@@ -1,0 +1,83 @@
+/root/xg27/0129/vb_setmode.c: In function ‘XGISetModeNew’:
+/root/xg27/0129/vb_setmode.c:427: warning: cast from pointer to integer of different size
+/root/xg27/0129/vb_setmode.c:418: warning: unused variable ‘KeepLockReg’
+/root/xg27/0129/vb_setmode.c:417: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetCRTVCLK’:
+/root/xg27/0129/vb_setmode.c:786: error: ‘elese’ undeclared (first use in this function)
+/root/xg27/0129/vb_setmode.c:786: error: (Each undeclared identifier is reported only once
+/root/xg27/0129/vb_setmode.c:786: error: for each function it appears in.)
+/root/xg27/0129/vb_setmode.c:787: error: expected ‘;’ before ‘temp1’
+/root/xg27/0129/vb_setmode.c:768: warning: unused variable ‘XGINew_P3c2’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetCRT1Group’:
+/root/xg27/0129/vb_setmode.c:982: warning: unused variable ‘XGINew_P3c2’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetCRT1CRTC’:
+/root/xg27/0129/vb_setmode.c:1726: warning: unused variable ‘DisplayType’
+/root/xg27/0129/vb_setmode.c:1725: warning: unused variable ‘ResInfo’
+/root/xg27/0129/vb_setmode.c:1724: warning: unused variable ‘modeflag’
+/root/xg27/0129/vb_setmode.c:1723: warning: unused variable ‘j’
+/root/xg27/0129/vb_setmode.c:1722: warning: unused variable ‘tempah’
+/root/xg27/0129/vb_setmode.c:1721: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_ClearBuffer’:
+/root/xg27/0129/vb_setmode.c:3017: warning: unused variable ‘i’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_GetVGAType’:
+/root/xg27/0129/vb_setmode.c:3728: warning: unused variable ‘tempah’
+/root/xg27/0129/vb_setmode.c:3727: warning: unused variable ‘tempbx’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_GetVBInfo’:
+/root/xg27/0129/vb_setmode.c:3822: warning: unused variable ‘OutputSelect’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_GetTVInfo’:
+/root/xg27/0129/vb_setmode.c:4070: warning: unused variable ‘OutputSelect’
+/root/xg27/0129/vb_setmode.c:4069: warning: unused variable ‘temp2’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SearchModeID’:
+/root/xg27/0129/vb_setmode.c:4413: warning: unused variable ‘VGA_INFO’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SenseCRT1’:
+/root/xg27/0129/vb_setmode.c:4810: warning: unused variable ‘j’
+/root/xg27/0129/vb_setmode.c: In function ‘SetDualChipRegs’:
+/root/xg27/0129/vb_setmode.c:5083: warning: cast from pointer to integer of different size
+/root/xg27/0129/vb_setmode.c:5090: warning: cast from pointer to integer of different size
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_IsLCDDualLink’:
+/root/xg27/0129/vb_setmode.c:5293: warning: unused variable ‘flag’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_GetCRT2Data’:
+/root/xg27/0129/vb_setmode.c:5317: warning: unused variable ‘ResIndex’
+/root/xg27/0129/vb_setmode.c:5316: warning: unused variable ‘CRT2Index’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_PreSetGroup1’:
+/root/xg27/0129/vb_setmode.c:5923: warning: unused variable ‘modeflag’
+/root/xg27/0129/vb_setmode.c:5922: warning: unused variable ‘pushbx’
+/root/xg27/0129/vb_setmode.c:5921: warning: unused variable ‘tempbx’
+/root/xg27/0129/vb_setmode.c:5920: warning: unused variable ‘tempax’
+/root/xg27/0129/vb_setmode.c:5919: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetGroup2’:
+/root/xg27/0129/vb_setmode.c:6605: warning: unused variable ‘PhasePoint’
+/root/xg27/0129/vb_setmode.c:6594: warning: unused variable ‘xres’
+/root/xg27/0129/vb_setmode.c:6593: warning: unused variable ‘resindex’
+/root/xg27/0129/vb_setmode.c:6592: warning: unused variable ‘temp3’
+/root/xg27/0129/vb_setmode.c:6591: warning: unused variable ‘temp1’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetTap4Regs’:
+/root/xg27/0129/vb_setmode.c:7430: warning: unused variable ‘tempcx’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetGroup4’:
+/root/xg27/0129/vb_setmode.c:7564: warning: unused variable ‘push1’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetPanelDelay’:
+/root/xg27/0129/vb_setmode.c:8658: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetXG21LVDSPara’:
+/root/xg27/0129/vb_setmode.c:8948: warning: unused variable ‘colordepth’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetXG27LVDSPara’:
+/root/xg27/0129/vb_setmode.c:9132: warning: unused variable ‘colordepth’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_EnableBridge’:
+/root/xg27/0129/vb_setmode.c:9536: warning: unused variable ‘tempax’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetDelayComp’:
+/root/xg27/0129/vb_setmode.c:9996: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_GetTVPtrIndex2’:
+/root/xg27/0129/vb_setmode.c:10420: warning: value computed is not used
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_SetCRT2ModeRegs’:
+/root/xg27/0129/vb_setmode.c:10434: warning: unused variable ‘j’
+/root/xg27/0129/vb_setmode.c:10433: warning: unused variable ‘i’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_CloseCRTC’:
+/root/xg27/0129/vb_setmode.c:10667: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_OpenCRTC’:
+/root/xg27/0129/vb_setmode.c:10689: warning: unused variable ‘temp’
+/root/xg27/0129/vb_setmode.c: In function ‘XGI_GetRAMDAC2DATA’:
+/root/xg27/0129/vb_setmode.c:10717: warning: unused variable ‘DisplayType’
+/root/xg27/0129/vb_setmode.c:10716: warning: unused variable ‘ResInfo’
+/root/xg27/0129/vb_setmode.c:10715: warning: unused variable ‘temp’
+make[2]: *** [/root/xg27/0129/vb_setmode.o] Error 1
+make[1]: *** [_module_/root/xg27/0129] Error 2
+make: *** [default] Error 2
