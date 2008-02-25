@@ -3133,7 +3133,7 @@ XGI330_LCDCapStruct  XGI_LCDCapList[]=
 
 XGI21_LVDSCapStruct XGI21_LCDCapList[6]=
 {
-    {DisableLCD24bpp + LCDPolarity,
+/*    {DisableLCD24bpp + LCDPolarity,
      2160,1250,1600,1200,  64,  1,  192,   3,
      0x70,0x24,0x20,0x04,0x0A,0x02,0xC8
     },
@@ -3156,8 +3156,31 @@ XGI21_LVDSCapStruct XGI21_LCDCapList[6]=
     {DisableLCD24bpp + LCDPolarity + (LCDPolarity << 8),
       800, 525, 640, 480,  16,  10,  96,   2,
      0x1B,0xE1,0x20,0x04,0x0A,0x02,0xC8
+    }*/
+    {DisableLCD24bpp + LCDPolarity,
+      928, 525, 800, 480,  40,  13,  48,   3,
+     0x52,0xC5,0x20,0x14,0x0A,0x02,0x00
+    },
+    {DisableLCD24bpp + LCDPolarity,
+      928, 525, 800, 480,  40,  13,  48,   3,
+     0x52,0xC5,0x20,0x14,0x0A,0x02,0x00
+    },
+    {DisableLCD24bpp + LCDPolarity,
+      928, 525, 800, 480,  40,  13,  48,   3,
+     0x52,0xC5,0x20,0x14,0x0A,0x02,0x00
+    },
+    {DisableLCD24bpp + LCDPolarity,
+      928, 525, 800, 480,  40,  13,  48,   3,
+     0x52,0xC5,0x20,0x14,0x0A,0x02,0x00
+    },
+    {DisableLCD24bpp + LCDPolarity,
+      928, 525, 800, 480,  40,  13,  48,   3,
+     0x52,0xC5,0x20,0x14,0x0A,0x02,0x00
+    },
+    {DisableLCD24bpp + LCDPolarity,
+      928, 525, 800, 480,  40,  13,  48,   3,
+     0x52,0xC5,0x20,0x14,0x0A,0x02,0x00
     }
-    
 };
 
 XGI_Ext2Struct XGI330_RefIndex[]=
