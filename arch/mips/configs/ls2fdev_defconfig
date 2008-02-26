@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.23.1
-# Mon Jan  7 16:47:49 2008
+# Tue Feb 26 20:05:54 2008
 #
 CONFIG_MIPS=y
 
@@ -1172,9 +1172,8 @@ CONFIG_FB_MODE_HELPERS=y
 # CONFIG_FB_ATY is not set
 # CONFIG_FB_S3 is not set
 # CONFIG_FB_SAVAGE is not set
-CONFIG_FB_SIS=y
-# CONFIG_FB_SIS_300 is not set
-CONFIG_FB_SIS_315=y
+# CONFIG_FB_SIS is not set
+CONFIG_FB_XGI=y
 # CONFIG_FB_NEOMAGIC is not set
 # CONFIG_FB_KYRO is not set
 # CONFIG_FB_3DFX is not set
