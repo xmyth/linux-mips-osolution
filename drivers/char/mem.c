@@ -30,8 +30,14 @@
 #include <asm/uaccess.h>
 #include <asm/io.h>
 
+#define CONFIG_GODSON_VIDEO_ACCELERATED 1
+
 #ifdef CONFIG_IA64
 # include <linux/efi.h>
+#endif
+#ifdef CONFIG_GODSON_VIDEO_ACCELERATED
+static unsigned long vgamem_start=0,vgamem_end=0;
+static int videoacc=1;
 #endif
 
 /*
@@ -284,6 +290,14 @@ static int mmap_mem(struct file * file, struct vm_area_struct * vma)
 	vma->vm_page_prot = phys_mem_access_prot(file, vma->vm_pgoff,
 						 size,
 						 vma->vm_page_prot);
+#ifdef CONFIG_GODSON_VIDEO_ACCELERATED
+	if(videoacc)
+	{
+	unsigned long offset = vma->vm_pgoff << PAGE_SHIFT;
+		if((offset >= vgamem_start) && (offset <vgamem_end))
+		vma->vm_page_prot = __pgprot((pgprot_val(vma->vm_page_prot)&~_CACHE_MASK)|_CACHE_UNCACHED_ACCELERATED);
+	}
+#endif
 
 	/* Remap-pfn-range will mark the range VM_IO and VM_RESERVED */
 	if (remap_pfn_range(vma,
@@ -997,4 +1011,53 @@ static int __init chr_dev_init(void)
 	return 0;
 }
 
+#ifdef CONFIG_GODSON_VIDEO_ACCELERATED
+#include <linux/pci.h>
+#ifndef pci_for_each_dev
+#define pci_for_each_dev for_each_pci_dev
+#endif
+
+static int __init myvgamem_init(void)
+{
+struct pci_dev *dev=0;
+struct resource *r;
+int idx;
+if(!videoacc)return 0;
+pci_for_each_dev(dev) {
+if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
+{
+	for (idx=0; idx < PCI_NUM_RESOURCES; idx++) {
+
+		r = &dev->resource[idx];
+		if (!r->start && r->end) {
+			continue;
+		}
+		if (r->flags & IORESOURCE_IO)
+		continue;
+		if (r->flags & IORESOURCE_MEM)
+		{
+		 vgamem_start=r->start;
+		 vgamem_end=r->end;
+		 printk("vga:start=%lx,end=%lx\n",vgamem_start,vgamem_end);
+		 return 0;
+		}
+	}
+
+}
+}
+printk("<0>can not find vga device\n");
+ return 0;
+}
+late_initcall(myvgamem_init);
+static int __init videoacc_setup(char *options)
+{
+    if (!options || !*options)
+        return 0;
+    if(options[0]=='0')videoacc=0;
+    else videoacc=1;
+    return 1;
+}
+
+__setup("videoacc=", videoacc_setup);
+#endif
 fs_initcall(chr_dev_init);
