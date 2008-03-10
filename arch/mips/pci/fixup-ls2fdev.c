@@ -85,9 +85,9 @@ static void __init loongson2e_nec_fixup(struct pci_dev *pdev)
 {
 	unsigned int val;
 
-	/* Configues port 1, 2, 3, 4 to be validate*/
+	/* Configues port 0, 1, 2, 3, 4 to be validate*/
 	pci_read_config_dword(pdev, 0xe0, &val);
-	pci_write_config_dword(pdev, 0xe0, (val & ~7) | 0x4);
+	pci_write_config_dword(pdev, 0xe0, (val & ~7) | 0x5);
 
 	/* System clock is 48-MHz Oscillator. */
 	pci_write_config_dword(pdev, 0xe4, 1 << 5);
