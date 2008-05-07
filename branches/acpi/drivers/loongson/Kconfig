@@ -1,0 +1,18 @@
+
+menuconfig LOONGSON_DRIVERS
+	bool "Loongson device drivers"
+	depends on LS2F_DEV_BOARD
+	---help---
+	  Say Y here to get to see options for devices used with Loongson
+	  computers. This option alone does not add any kernel code.
+
+	  If you say N, all options in this submenu will be skipped and disabled.
+
+if LOONGSON_DRIVERS
+
+config LS_APM_EMU
+	tristate "APM emulation"
+	select APM_EMULATION
+config LS_XGI_MODE
+	tristate "Switch XGI Mode"
+endif
