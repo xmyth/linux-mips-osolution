@@ -6,3 +6,4 @@
 
 obj-$(CONFIG_LS_APM_EMU)	+= apm_emu.o
 obj-$(CONFIG_LS_XGI_MODE)	+= xgi_mode.o
+obj-y                           += freebiosvga/
