@@ -63,6 +63,7 @@ obj-$(CONFIG_KGDB)		+= gdb-low.o gdb-stub.o
 obj-$(CONFIG_PROC_FS)		+= proc.o
 
 obj-$(CONFIG_64BIT)		+= cpu-bugs64.o
+obj-$(CONFIG_ACPI)		+= acpi/
 
 obj-$(CONFIG_PCSPEAKER)		+= pcspeaker.o
 

@@ -43,6 +43,12 @@
 #include <asm/inst.h>
 #include <asm/stacktrace.h>
 
+unsigned long boot_option_idle_override = 0;
+EXPORT_SYMBOL(boot_option_idle_override);
+void cpu_idle_wait(void)
+{
+}
+EXPORT_SYMBOL_GPL(cpu_idle_wait);
 /*
  * The idle thread. There's no useful work to be done, so just try to conserve
  * power and have a low exit latency (ie sit in a loop waiting for somebody to
