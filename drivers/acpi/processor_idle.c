@@ -219,15 +219,17 @@ acpi_processor_power_activate(struct acpi_processor *pr,
 
 static void acpi_safe_halt(void)
 {
-	current_thread_info()->status &= ~TS_POLLING;
+/*	current_thread_info()->status &= ~TS_POLLING;
+*/
 	/*
 	 * TS_POLLING-cleared state must be visible before we
 	 * test NEED_RESCHED:
 	 */
-	smp_mb();
+/*	smp_mb();
 	if (!need_resched())
 		safe_halt();
 	current_thread_info()->status |= TS_POLLING;
+*/
 }
 
 static atomic_t c3_cpu_count;
@@ -450,17 +452,17 @@ static void acpi_processor_idle(void)
 	 * Invoke the current Cx state to put the processor to sleep.
 	 */
 	if (cx->type == ACPI_STATE_C2 || cx->type == ACPI_STATE_C3) {
-		current_thread_info()->status &= ~TS_POLLING;
+//		current_thread_info()->status &= ~TS_POLLING;
 		/*
 		 * TS_POLLING-cleared state must be visible before we
 		 * test NEED_RESCHED:
 		 */
-		smp_mb();
+/*		smp_mb();
 		if (need_resched()) {
 			current_thread_info()->status |= TS_POLLING;
 			local_irq_enable();
 			return;
-		}
+		}*/
 	}
 
 	switch (cx->type) {
@@ -513,7 +515,7 @@ static void acpi_processor_idle(void)
 		/* Do not account our idle-switching overhead: */
 		sleep_ticks -= cx->latency_ticks + C2_OVERHEAD;
 
-		current_thread_info()->status |= TS_POLLING;
+		//current_thread_info()->status |= TS_POLLING;
 		acpi_state_timer_broadcast(pr, cx, 0);
 		break;
 
@@ -539,7 +541,7 @@ static void acpi_processor_idle(void)
 			}
 		} else if (!pr->flags.bm_check) {
 			/* SMP with no shared cache... Invalidate cache  */
-			ACPI_FLUSH_CPU_CACHE();
+//			ACPI_FLUSH_CPU_CACHE();
 		}
 
 		/* Get start time (ticks) */
@@ -571,7 +573,7 @@ static void acpi_processor_idle(void)
 		/* Do not account our idle-switching overhead: */
 		sleep_ticks -= cx->latency_ticks + C3_OVERHEAD;
 
-		current_thread_info()->status |= TS_POLLING;
+		//current_thread_info()->status |= TS_POLLING;
 		acpi_state_timer_broadcast(pr, cx, 0);
 		break;
 
@@ -1303,6 +1305,7 @@ int __cpuinit acpi_processor_power_init(struct acpi_processor *pr,
 	 * Note that we use previously set idle handler will be used on
 	 * platforms that only support C1.
 	 */
+	unsigned long boot_option_idle_override = 0;
 	if ((pr->flags.power) && (!boot_option_idle_override)) {
 		printk(KERN_INFO PREFIX "CPU%d (power states:", pr->id);
 		for (i = 1; i <= pr->power.count; i++)
@@ -1352,7 +1355,7 @@ int acpi_processor_power_exit(struct acpi_processor *pr,
 		 * (pm_idle), Wait for all processors to update cached/local
 		 * copies of pm_idle before proceeding.
 		 */
-		cpu_idle_wait();
+		//cpu_idle_wait();
 #ifdef CONFIG_SMP
 		unregister_latency_notifier(&acpi_processor_latency_notifier);
 #endif

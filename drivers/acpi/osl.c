@@ -79,9 +79,9 @@ static char osi_additional_string[OSI_STRING_LENGTH_MAX];
 
 static int osi_linux;		/* disable _OSI(Linux) by default */
 
-#ifdef CONFIG_DMI
+//#ifdef CONFIG_DMI
 static struct __initdata dmi_system_id acpi_osl_dmi_table[];
-#endif
+//#endif
 
 static void __init acpi_request_region (struct acpi_generic_address *addr,
 	unsigned int length, char *desc)
@@ -1213,7 +1213,7 @@ acpi_os_validate_address (
     return AE_OK;
 }
 
-#ifdef CONFIG_DMI
+//#ifdef CONFIG_DMI
 static int dmi_osi_linux(struct dmi_system_id *d)
 {
 	printk(KERN_NOTICE "%s detected: enabling _OSI(Linux)\n", d->ident);
@@ -1235,6 +1235,6 @@ static struct dmi_system_id acpi_osl_dmi_table[] __initdata = {
 	 },
 	{}
 };
-#endif /* CONFIG_DMI */
+//#endif /* CONFIG_DMI */
 
 #endif
