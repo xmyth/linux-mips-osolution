@@ -672,8 +672,8 @@ static void acpi_video_device_find_cap(struct acpi_video_device *device)
 		if (!name)
 			return;
 		sprintf(name, "acpi_video%d", count++);
-		device->output_dev = video_output_register(name,
-				NULL, device, &acpi_output_properties);
+		//device->output_dev = video_output_register(name,
+		//		NULL, device, &acpi_output_properties);
 		kfree(name);
 	}
 	return;
@@ -1719,7 +1719,7 @@ static int acpi_video_bus_put_one_device(struct acpi_video_device *device)
 					    ACPI_DEVICE_NOTIFY,
 					    acpi_video_device_notify);
 	backlight_device_unregister(device->backlight);
-	video_output_unregister(device->output_dev);
+	//video_output_unregister(device->output_dev);
 	return 0;
 }
 

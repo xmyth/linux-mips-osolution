@@ -1359,7 +1359,7 @@ static int acpi_thermal_resume(struct acpi_device *device)
 	return AE_OK;
 }
 
-#ifdef CONFIG_DMI
+//#ifdef CONFIG_DMI
 static int thermal_act(struct dmi_system_id *d) {
 
 	if (act == 0) {
@@ -1434,7 +1434,7 @@ static struct dmi_system_id thermal_dmi_table[] __initdata = {
 	},
 	{}
 };
-#endif /* CONFIG_DMI */
+//#endif /* CONFIG_DMI */
 
 static int __init acpi_thermal_init(void)
 {

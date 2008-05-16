@@ -362,7 +362,7 @@ acpi_status asmlinkage acpi_enter_sleep_state(u8 sleep_state)
 
 	/* Write #2: SLP_TYP + SLP_EN */
 
-	ACPI_FLUSH_CPU_CACHE();
+	//ACPI_FLUSH_CPU_CACHE();
 
 	status = acpi_hw_register_write(ACPI_MTX_DO_NOT_LOCK,
 					ACPI_REGISTER_PM1A_CONTROL,
@@ -462,7 +462,7 @@ acpi_status asmlinkage acpi_enter_sleep_state_s4bios(void)
 		return_ACPI_STATUS(status);
 	}
 
-	ACPI_FLUSH_CPU_CACHE();
+	//ACPI_FLUSH_CPU_CACHE();
 
 	status = acpi_os_write_port(acpi_gbl_FADT.smi_command,
 				    (u32) acpi_gbl_FADT.S4bios_request, 8);

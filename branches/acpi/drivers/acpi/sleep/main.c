@@ -41,7 +41,7 @@ int acpi_sleep_prepare(u32 acpi_state)
 							     acpi_wakeup_address));
 
 	}
-	ACPI_FLUSH_CPU_CACHE();
+//	ACPI_FLUSH_CPU_CACHE();
 	acpi_enable_wakeup_device_prep(acpi_state);
 #endif
 	acpi_gpe_sleep_prepare(acpi_state);
@@ -116,7 +116,7 @@ static int acpi_pm_enter(suspend_state_t pm_state)
 	unsigned long flags = 0;
 	u32 acpi_state = acpi_target_sleep_state;
 
-	ACPI_FLUSH_CPU_CACHE();
+//	ACPI_FLUSH_CPU_CACHE();
 
 	/* Do arch specific saving of state. */
 	if (acpi_state == ACPI_STATE_S3) {
