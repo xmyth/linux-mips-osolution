@@ -1956,6 +1956,8 @@ menu "Power management options"
 
 source "kernel/power/Kconfig"
 
+source "drivers/acpi/Kconfig"
+
 endmenu
 
 source "net/Kconfig"
