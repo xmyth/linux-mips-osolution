@@ -7,4 +7,5 @@
 obj-$(CONFIG_LS_APM_EMU)	+= apm_emu.o
 obj-$(CONFIG_LS_XGI_MODE)	+= xgi_mode.o
 obj-$(CONFIG_LS_ACPI_MODULE)	+= acpi_module.o
-#obj-y                           += freebiosvga/
+obj-y                           += freebiosvga/
+obj-m				+= vga_post.o

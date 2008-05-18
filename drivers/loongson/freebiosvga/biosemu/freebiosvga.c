@@ -6,6 +6,7 @@
 
 #include <linux/types.h>
 #include <linux/pci.h>
+#include <linux/module.h>
 #include <linux/io.h>
 #include "biosemui.h"
 
@@ -52,3 +53,5 @@ int vga_bios_post(struct pci_dev *pdev)
 
 
 }
+
+EXPORT_SYMBOL(vga_bios_post);
