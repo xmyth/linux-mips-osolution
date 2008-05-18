@@ -29,6 +29,7 @@
 #include <asm/sections.h>
 #include <asm/setup.h>
 #include <asm/system.h>
+#include <linux/acpi.h>
 
 struct cpuinfo_mips cpu_data[NR_CPUS] __read_mostly;
 
@@ -550,6 +551,26 @@ void __init setup_arch(char **cmdline_p)
 #ifdef CONFIG_SMP
 	plat_smp_setup();
 #endif
+	
+#ifdef CONFIG_ACPI
+	////ACPI
+	acpi_reserve_bootmem();
+
+	/*
+	 * Parse the ACPI tables for possible boot-time SMP configuration.
+	 */
+	acpi_boot_table_init();
+
+	acpi_boot_init();
+
+#if defined(CONFIG_SMP) && defined(CONFIG_X86_PC)
+	if (def_to_bigsmp)
+		printk(KERN_WARNING "More than 8 CPUs detected and "
+			"CONFIG_X86_PC cannot handle it.\nUse "
+			"CONFIG_X86_GENERICARCH or CONFIG_X86_BIGSMP.\n");
+#endif
+#endif
+
 }
 
 static int __init fpu_disable(char *s)
