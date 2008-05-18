@@ -97,11 +97,13 @@ void __init plat_mem_setup(void)
 	{
 		highmemsize = memsize - 256;
 		memsize = 256;
-		if (highmemsize > 0x700)
-			highmemsize = 0x700;
 	}
+	memsize = 255;
+	if (highmemsize > 0x700)
+		highmemsize = 0x700;
 
 	add_memory_region(0, (memsize << 20), BOOT_MEM_RAM);
+	add_memory_region(255<<20, (1 << 20), BOOT_MEM_RESERVED);
 #ifdef CONFIG_64BIT
 	*(unsigned volatile long long *) 0x900000003ff00010 = 0x0000000080000000; //base
 	*(unsigned volatile long long *) 0x900000003ff00030 = 0xffffffff80000000; //mask
