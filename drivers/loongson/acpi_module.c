@@ -6,6 +6,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/smp_lock.h>
+#include "via686b.h"  //This file comes from pmon definition
+
+
+extern void flush_tlb_all(void);
 
 #define mipssaveregcp0(reg, value) asm volatile("mfc0 $8, $"#reg"\t\n" "sd $8,%0\t\n":"=m"(value))
 
@@ -24,6 +28,7 @@
 
 
 struct MIPS_CPU_REG_STATE{
+	unsigned long long version;
 	unsigned long long r[32];
 	unsigned long long cp0[32];
 	unsigned long long f[32];
@@ -32,15 +37,71 @@ struct MIPS_CPU_REG_STATE{
 
 struct MIPS_CPU_REG_STATE * MipsCpuRegState = (struct MIPS_CPU_REG_STATE *)(0xffffffffa0000000 + (255 << 20));
 
+static void Enter_STR(void)
+{
+	unsigned int v0, a0;
+
+	const unsigned char STR_VALUE = 4;
+
+#ifdef CONFIG_32BIT
+	#define AddrBase 0xbfd00000
+#else
+	#define AddrBase 0xffffffffbfd00000
+#endif
+	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_DATA0) = STR_VALUE;
+	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_DATA1) = 0;
+	
+	//ST7 chip addr 
+	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_ADDRESS) = 0x24;
+	
+	//Offset 
+	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_COMMAND) = 0x0;
+
+	//Byte Write
+	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_CONTROL) = 0x08;
+
+	v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS);
+	v0 &= 0x1f;
+	if (v0)
+	{
+		*(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS) = v0;
+		v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS);
+	}
+	
+	//Start
+	v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_CONTROL);
+	v0 |= 0x40;
+	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_CONTROL) = v0;
+
+	do
+	{
+		//Wait
+		for (a0 = 0x1000; a0 != 0;);
+			a0--;
+		v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS);
+	}while(v0 & SMBUS_HOST_STATUS_BUSY);
+
+	v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS);
+	v0 &= 0x1f;
+	if (v0)
+	{
+		*(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS) = v0;
+		v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS);
+	}
+}
+
+
 static int mips_save_ret_addr(void)
 {
 	mipssavereg(31, MipsCpuRegState->r[31]);
+
+	Enter_STR();	
 }
 
 
 static int mips_save_register_state(void)
 {
-	
+	MipsCpuRegState->version = 0xaa554321131455aa;
 
 	mipssavereg(0, MipsCpuRegState->r[0]);
 	//  mipssavereg(1, MipsCpuRegState->r[1]);  
@@ -148,12 +209,14 @@ static int mips_save_register_state(void)
 
 	mips_save_ret_addr();
 
+//	flush_tlb_all();
+
 }
 
 
 static int __init acpi_module_init(void)
 {
-	int i;
+	unsigned int i;
 	
 	lock_kernel();
 
@@ -166,7 +229,7 @@ static int __init acpi_module_init(void)
 	  printk("r%d = %llx \n ",i, MipsCpuRegState->r[i]);
 
 
-	printk("Restore Memory = %lx\n", MipsCpuRegState);
+	printk("Restore Memory = %llx\n", MipsCpuRegState);
 	
 	unlock_kernel();
 //	for (i = 0; i < 32; i++)
@@ -178,14 +241,14 @@ static int __init acpi_module_init(void)
 //	);
 //
 
-	for (i = 0; i < 256; i++)
+/*	for (i = 0; i < 256; i++)
 	{
 		printk("%4x", *((unsigned long *)(0xffffffffa0000000 + (255 << 20)+ i * 4)));
 		if ((i + 1) % 16 == 0)
 			printk("\n");
 	//	*((unsigned long *)(0xffffffffa0000000 + (255 << 20) + i * 4)) = 0;
-	}
-
+	}*/
+	
 
 	printk(KERN_INFO "acpi_module: ACPI Module initialized.\n");
 
