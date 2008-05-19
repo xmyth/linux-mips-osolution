@@ -35,8 +35,8 @@ extern struct pci_ops bonito64_pci_ops;
 
 static struct resource loongson2e_pci_mem_resource = {
 	.name   = "LOONGSON2F PCI MEM",
-	.start  = 0x14000000UL,
-	.end    = 0x1fffffffUL,
+	.start  = 0x50000000UL,
+	.end    = 0x7fffffffUL,
 	.flags  = IORESOURCE_MEM,
 };
 
@@ -78,6 +78,28 @@ static void __init ict_pcimap(void)
 	BONITO(BONITO_REGBASE + 0x50) = 0x8000000C;
 	BONITO(BONITO_REGBASE + 0x54) = 0xFFFFFFFF;
 	BONITO(BONITO_REGBASE + 0x68) = 0x00FE0105;
+	
+	/*set pci 2G -> DDR 0 ,window size 2G*/
+	asm(".set mips3;dli $2,0x900000003ff00000;li $3,0x80000000;sd $3,0x60($2);sd $0,0xa0($2);dli $3,0xffffffff80000000;sd $3,0x80($2);.set mips0" :::"$2","$3");
+
+	/* 
+	 * PCI to local mapping: [8M,16M] -> [8M,16M]
+	 */
+	BONITO_PCI_REG(0x18) = 0x00800000; 
+	BONITO_PCI_REG(0x1c) = 0x0;
+	BONITO(BONITO_REGBASE + 0x58) = 0xff80000c;
+	BONITO(BONITO_REGBASE + 0x5c) = 0xffffffff;
+
+	/*set pci 8-16M -> DDR 8-16M ,window size 8M*/
+	asm(".set mips3;dli $2,0x900000003ff00000;li $3,0x800000;sd $3,0x68($2);sd $3,0xa8($2);dli $3,0xffffffffff800000;sd $3,0x88($2);.set mips0" :::"$2","$3");
+	  
+	asm(".set mips3;dli $2,0x900000003ff00000;li $3,0x40000000;sd $3,0x18($2);or $3,1;sd $3,0x58($2);dli $3,0xffffffffc0000000;sd $3,0x38($2);.set mips0" :::"$2","$3");
+	
+	/* if needed then enable io cache for mem 0*/
+	if (BONITO_PCIMEMBASECFG & BONITO_PCIMEMBASECFG_MEMBASE0_CACHED) 
+	  		BONITO_PCIMEMBASECFG = BONITO_PCIMEMBASECFG_MEMBASE0_CACHED;
+	else
+	  		BONITO_PCIMEMBASECFG = 0x0;
 }
 
 static int __init pcibios_init(void)
