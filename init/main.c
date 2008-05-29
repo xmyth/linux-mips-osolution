@@ -567,10 +567,15 @@ asmlinkage void __init start_kernel(void)
 				"enabled *very* early, fixing it\n");
 		local_irq_disable();
 	}
+	printk(KERN_NOTICE "sort_main_extable\n");
 	sort_main_extable();
+	printk(KERN_NOTICE "trap_init\n");
 	trap_init();
+	printk(KERN_NOTICE "rcu_init\n" );
 	rcu_init();
+	printk(KERN_NOTICE "init_IRQ\n" );
 	init_IRQ();
+	printk(KERN_NOTICE "pidhash_init\n" );
 	pidhash_init();
 	init_timers();
 	hrtimers_init();
