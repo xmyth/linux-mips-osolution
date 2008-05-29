@@ -491,5 +491,6 @@ void flush_tlb_one(unsigned long vaddr)
 	smp_on_each_tlb(flush_tlb_one_ipi, (void *) vaddr);
 }
 
+EXPORT_SYMBOL(flush_tlb_all);
 EXPORT_SYMBOL(flush_tlb_page);
 EXPORT_SYMBOL(flush_tlb_one);

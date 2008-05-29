@@ -1415,7 +1415,9 @@ void __init per_cpu_trap_init(void)
 	if (bootTC) {
 #endif /* CONFIG_MIPS_MT_SMTC */
 		cpu_cache_init();
+		printk("tlb_init start\n");
 		tlb_init();
+		printk("tlb_init end\n");
 #ifdef CONFIG_MIPS_MT_SMTC
 	} else if (!secondaryTC) {
 		/*
@@ -1464,13 +1466,22 @@ void __init trap_init(void)
 	unsigned long i;
 
 	if (cpu_has_veic || cpu_has_vint)
+		{
 		ebase = (unsigned long) alloc_bootmem_low_pages (0x200 + VECTORSPACING*64);
+		printk(KERN_NOTICE "In trap_init Function 1 Addr = %lx \n", ebase);
+		}
 	else
+		{
 		ebase = CAC_BASE;
+		printk(KERN_NOTICE "In trap_init Function 2 Addr = %lx \n", ebase);
+		}
+
 
 	mips_srs_init();
 
 	per_cpu_trap_init();
+	
+	printk(KERN_NOTICE "In trap_init Step 1 \n");
 
 	/*
 	 * Copy the generic exception handlers to their final destination.
@@ -1479,11 +1490,14 @@ void __init trap_init(void)
 	 */
 	set_handler(0x180, &except_vec3_generic, 0x80);
 
+	printk(KERN_NOTICE "In trap_init Step 2 \n");
 	/*
 	 * Setup default vectors
 	 */
 	for (i = 0; i <= 31; i++)
 		set_except_vector(i, handle_reserved);
+
+	printk(KERN_NOTICE "In trap_init Step 3 \n");
 
 	/*
 	 * Copy the EJTAG debug exception vector handler code to it's final
@@ -1514,6 +1528,8 @@ void __init trap_init(void)
 	 * it different ways.
 	 */
 	parity_protection_init();
+	
+	printk(KERN_NOTICE "In trap_init Step 4 \n");
 
 	/*
 	 * The Data Bus Errors / Instruction Bus Errors are signaled
@@ -1543,6 +1559,8 @@ void __init trap_init(void)
 	set_except_vector(12, handle_ov);
 	set_except_vector(13, handle_tr);
 
+	printk(KERN_NOTICE "In trap_init Step 5 \n");
+
 	if (current_cpu_data.cputype == CPU_R6000 ||
 	    current_cpu_data.cputype == CPU_R6000A) {
 		/*
@@ -1566,6 +1584,8 @@ void __init trap_init(void)
 
 	set_except_vector(22, handle_mdmx);
 
+	printk(KERN_NOTICE "In trap_init Step 6 \n");
+
 	if (cpu_has_mcheck)
 		set_except_vector(24, handle_mcheck);
 
@@ -1573,6 +1593,8 @@ void __init trap_init(void)
 		set_except_vector(25, handle_mt);
 
 	set_except_vector(26, handle_dsp);
+
+	printk(KERN_NOTICE "In trap_init Step 7 \n");
 
 	if (cpu_has_vce)
 		/* Special exception: R4[04]00 uses also the divec space. */
@@ -1586,6 +1608,8 @@ void __init trap_init(void)
 #ifdef CONFIG_MIPS32_COMPAT
 	signal32_init();
 #endif
+
+	printk(KERN_NOTICE "In trap_init Step 8 \n");
 
 	flush_icache_range(ebase, ebase + 0x400);
 	flush_tlb_handlers();

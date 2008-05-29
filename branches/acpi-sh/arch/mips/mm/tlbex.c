@@ -1254,6 +1254,11 @@ static void __init build_r4000_tlb_refill_handler(void)
 	unsigned int final_len;
 	int i;
 
+	printk("build_r4000_tlb_refill_handler tlb_handler =%x\n", (u32)tlb_handler);
+	printk("build_r4000_tlb_refill_handler labels =%x\n", (u32)labels);
+	printk("build_r4000_tlb_refill_handler relocs =%x\n", (u32)relocs);
+	printk("build_r4000_tlb_refill_handler final_handler =%x\n", (u32)final_handler);
+
 	memset(tlb_handler, 0, sizeof(tlb_handler));
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));

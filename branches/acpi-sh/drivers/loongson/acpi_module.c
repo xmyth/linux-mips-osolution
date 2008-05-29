@@ -25,6 +25,58 @@ extern void flush_tlb_all(void);
 #define mipssavefreg(reg, value)  asm volatile("sdc1 $"#reg", %0\t\n":"=m"(value))                                                       
 #define mipsrestorefreg(reg, value)  asm volatile("ldc1 $"#reg", %0\t\n":"m"(value))                                                       
 
+#ifdef CONFIG_32BIT
+#define COM1_BASE_ADDR	0xbfd003f8
+#define COM2_BASE_ADDR	0xbfd002f8
+#define COM3_BASE_ADDR	0xbff003f8
+#else
+#define COM1_BASE_ADDR	0xffffffffbfd003f8
+#define COM2_BASE_ADDR	0xffffffffbfd002f8
+#define COM3_BASE_ADDR	0xffffffffbff003f8
+#endif
+//#define	NS16550HZ	1843200
+#define	NS16550HZ	3686400
+
+#define	NS16550_DATA	0
+#define	NS16550_IER	1
+#define	NS16550_IIR	2
+#define	NS16550_FIFO	2
+#define	NS16550_CFCR	3
+#define	NS16550_MCR	4
+#define	NS16550_LSR	5
+#define	NS16550_MSR	6	
+#define	NS16550_SCR	7
+
+/* line status register */
+#define	LSR_RCV_FIFO	0x80	/* error in receive fifo */
+#define	LSR_TSRE	0x40	/* transmitter empty */
+#define	LSR_TXRDY	0x20	/* transmitter ready */
+#define	LSR_BI		0x10	/* break detected */
+#define	LSR_FE		0x08	/* framing error */
+#define	LSR_PE		0x04	/* parity error */
+#define	LSR_OE		0x02	/* overrun error */
+#define	LSR_RXRDY	0x01	/* receiver ready */
+#define	LSR_RCV_MASK	0x1f
+
+
+void PrintStrToSerial(unsigned char *buf, unsigned int len)
+{
+	unsigned char v1;
+	int i;
+
+	for (i = 0; i < len ; i++)
+	{
+		do
+		{
+			v1 = *((unsigned char *)(COM1_BASE_ADDR + NS16550_LSR));
+			
+		}
+		while((v1 & LSR_TXRDY) == 0);
+
+		*((unsigned char *)(COM1_BASE_ADDR + NS16550_DATA)) = buf[i];	
+	}
+}
+
 
 
 struct MIPS_CPU_REG_STATE{
@@ -95,12 +147,25 @@ static int mips_save_ret_addr(void)
 {
 	mipssavereg(31, MipsCpuRegState->r[31]);
 
+	printk("Return Addr  = %llx  mips_save_ret_addr \n",  MipsCpuRegState->r[31]);
+
 	Enter_STR();	
 }
 
 
 static int mips_save_register_state(void)
 {
+	mipssavereg(31, MipsCpuRegState->r[31]);
+
+	printk("Return Addr  = %llx  mips_save_register_state \n",  MipsCpuRegState->r[31]);
+
+//	printk("%lx \n", *(unsigned long *)0x9800000000000000);
+	
+	unsigned char v1;
+	int i;
+	int len = 25;
+	const char * buf= "Welcome Back From STR! \n\r";
+
 	MipsCpuRegState->version = 0xaa554321131455aa;
 
 	mipssavereg(0, MipsCpuRegState->r[0]);
@@ -209,6 +274,20 @@ static int mips_save_register_state(void)
 
 	mips_save_ret_addr();
 
+
+	for (i = 0; i < len ; i++)
+	{
+		do
+		{
+			v1 = *((unsigned char *)(COM1_BASE_ADDR + NS16550_LSR));
+			
+		}
+		while((v1 & LSR_TXRDY) == 0);
+
+		*((unsigned char *)(COM1_BASE_ADDR + NS16550_DATA)) = buf[i];	
+	}
+
+//	PrintStrToSerial("Welcome Back From STR! \n\r", 25);
 //	flush_tlb_all();
 
 }
@@ -217,6 +296,9 @@ static int mips_save_register_state(void)
 static int __init acpi_module_init(void)
 {
 	unsigned int i;
+	mipssavereg(31, MipsCpuRegState->r[31]);
+
+	printk("Return Addr  = %llx  acpi_module_init \n",  MipsCpuRegState->r[31]);
 	
 	lock_kernel();
 
@@ -232,6 +314,10 @@ static int __init acpi_module_init(void)
 	printk("Restore Memory = %llx\n", MipsCpuRegState);
 	
 	unlock_kernel();
+
+
+//	printk("%lx \n", *(unsigned long *)0x9800000000000000);
+
 //	for (i = 0; i < 32; i++)
 //	  printk("f%d = %llx \n ",i, MipsCpuRegState->f[i]);
 	  
@@ -248,6 +334,8 @@ static int __init acpi_module_init(void)
 			printk("\n");
 	//	*((unsigned long *)(0xffffffffa0000000 + (255 << 20) + i * 4)) = 0;
 	}*/
+
+
 	
 
 	printk(KERN_INFO "acpi_module: ACPI Module initialized.\n");
