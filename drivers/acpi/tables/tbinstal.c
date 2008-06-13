@@ -70,9 +70,19 @@ acpi_status acpi_tb_verify_table(struct acpi_table_desc *table_desc)
 	if (!table_desc->pointer) {
 		if ((table_desc->flags & ACPI_TABLE_ORIGIN_MASK) ==
 		    ACPI_TABLE_ORIGIN_MAPPED) {
+			if (ACPI_COMPARE_NAME(&table_desc->signature, ACPI_SIG_DSDT) 
+			   ||ACPI_COMPARE_NAME(&table_desc->signature, ACPI_SIG_FACS)  ) 
+			{
+				acpi_gbl_permanent_mmap = 0;
+			}
 			table_desc->pointer =
 			    acpi_os_map_memory(table_desc->address,
 					       table_desc->length);
+			if (ACPI_COMPARE_NAME(&table_desc->signature, ACPI_SIG_DSDT)) 
+			{
+				acpi_gbl_permanent_mmap = 1;
+			}
+			printk(KERN_INFO "HI0531:acpi_tb_verify_table: table_desc->pointer=0x%llx\n",table_desc->pointer);
 		}
 		if (!table_desc->pointer) {
 			return_ACPI_STATUS(AE_NO_MEMORY);

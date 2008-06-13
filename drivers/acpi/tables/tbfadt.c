@@ -44,6 +44,16 @@
 #include <acpi/acpi.h>
 #include <acpi/actables.h>
 
+#define MY_ACPI_MOVE_64_TO_64(d,s)         {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
+										 ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1];\
+										 ((  u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[2];\
+										 ((  u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[3];\
+										 ((  u8 *)(void *)(d))[4] = ((u8 *)(void *)(s))[4];\
+										 ((  u8 *)(void *)(d))[5] = ((u8 *)(void *)(s))[5];\
+										 ((  u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[6];\
+										 ((  u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[7];}
+
+
 #define _COMPONENT          ACPI_TABLES
 ACPI_MODULE_NAME("tbfadt")
 
@@ -131,7 +141,7 @@ acpi_tb_init_generic_address(struct acpi_generic_address *generic_address,
 	 * The 64-bit Address field is non-aligned in the byte packed
 	 * GAS struct.
 	 */
-	ACPI_MOVE_64_TO_64(&generic_address->address, &address);
+	MY_ACPI_MOVE_64_TO_64(&generic_address->address, &address);
 
 	/* All other fields are byte-wide */
 
