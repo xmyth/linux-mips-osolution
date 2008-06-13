@@ -96,7 +96,10 @@ acpi_tb_check_xsdt(acpi_physical_address address)
 	table_entry =
 		ACPI_CAST_PTR(u8, table) + sizeof(struct acpi_table_header);
 	for (i = 0; i < table_count; i++) {
-		ACPI_MOVE_64_TO_64(&xsdt_entry_address, table_entry);
+		//ACPI_MOVE_64_TO_64(&xsdt_entry_address, table_entry);
+		xsdt_entry_address = ((struct acpi_table_xsdt*)table)->table_offset_entry[0];
+
+		printk(KERN_INFO "HI2008:acpi_tb_check_xsdt: xsdt_entry_address=0x%x\n",xsdt_entry_address);
 		if (!xsdt_entry_address) {
 			/* XSDT has NULL entry */
 			break;
@@ -357,7 +360,8 @@ acpi_tb_get_root_table_entry(u8 * table_entry,
 		 * 32-bit platform, XSDT: Truncate 64-bit to 32-bit and return
 		 * 64-bit platform, XSDT: Move (unaligned) 64-bit to local, return 64-bit
 		 */
-		ACPI_MOVE_64_TO_64(&address64, table_entry);
+		//ACPI_MOVE_64_TO_64(&address64, table_entry);
+		address64 = ((struct acpi_table_xsdt*)(table_entry-36) )->table_offset_entry[0];
 
 #if ACPI_MACHINE_WIDTH == 32
 		if (address64 > ACPI_UINT32_MAX) {
