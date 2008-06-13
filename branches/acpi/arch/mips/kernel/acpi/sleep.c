@@ -56,13 +56,14 @@ void __init acpi_reserve_bootmem(void)
 	if ((&wakeup_end - &wakeup_start) > PAGE_SIZE) {
 		printk(KERN_ERR
 		       "ACPI: Wakeup code way too big, S3 disabled.\n");
-		printk(KERN_ERR "ACPI: wakeup_end=0x%X,wakeup_start=0x%X,PAGE_SIZE=0x%X\n",&wakeup_end,&wakeup_start,PAGE_SIZE);
+		printk(KERN_ERR "ACPI: wakeup_end=0x%llx,wakeup_start=0x%llx,PAGE_SIZE=0x%x\n",&wakeup_end,&wakeup_start,PAGE_SIZE);
 		return;
 	}
 
 	acpi_wakeup_address = (unsigned long)alloc_bootmem_low(PAGE_SIZE);
 	if (!acpi_wakeup_address)
 		printk(KERN_ERR "ACPI: Cannot allocate lowmem, S3 disabled.\n");
+	printk(KERN_INFO "HI080602: acpi_reserve_bootmem: acpi_wakeup_address=0x%llx\n",acpi_wakeup_address);
 }
 
 static int __init acpi_sleep_setup(char *str)

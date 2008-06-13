@@ -31,8 +31,10 @@ struct pci_raw_ops *raw_pci_ops;
 void (*pm_idle)(void);
 EXPORT_SYMBOL(pm_idle);
 
-char wakeup_start = 0;
 char wakeup_end = 0;
+// g_acpi_temp_wakup_code
+char wakeup_start = 0;
+
 
 void acpi_copy_wakeup_routine()
 {
