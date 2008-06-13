@@ -85,7 +85,7 @@
 #define COMPILER_DEPENDENT_INT64    long
 #define COMPILER_DEPENDENT_UINT64   unsigned long
 #else
-#define ACPI_MACHINE_WIDTH          32
+#define ACPI_MACHINE_WIDTH          64
 #define COMPILER_DEPENDENT_INT64    long long
 #define COMPILER_DEPENDENT_UINT64   unsigned long long
 #define ACPI_USE_NATIVE_DIVIDE
