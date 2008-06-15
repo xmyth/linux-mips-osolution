@@ -101,7 +101,10 @@ void __init plat_mem_setup(void)
 			highmemsize = 0x700;
 	}
 
+	// 1M memory reserved 
+	memsize=254;
 	add_memory_region(0, (memsize << 20), BOOT_MEM_RAM);
+	
 #ifdef CONFIG_64BIT
 	*(unsigned volatile long long *) 0x900000003ff00010 = 0x0000000080000000; //base
 	*(unsigned volatile long long *) 0x900000003ff00030 = 0xffffffff80000000; //mask

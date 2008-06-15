@@ -515,6 +515,7 @@ asmlinkage void __init start_kernel(void)
 	char * command_line;
 	extern struct kernel_param __start___param[], __stop___param[];
 
+	printk("Entered start_kernel:CP0 CONFIG=0x%lx\n", read_c0_config());
 	smp_setup_processor_id();
 
 	/*
@@ -538,6 +539,7 @@ asmlinkage void __init start_kernel(void)
 	page_address_init();
 	printk(KERN_NOTICE);
 	printk(linux_banner);
+	printk("Before setup_arch:CP0 CONFIG=0x%lx\n", read_c0_config());
 	setup_arch(&command_line);
 	setup_command_line(command_line);
 	unwind_setup();
@@ -568,6 +570,7 @@ asmlinkage void __init start_kernel(void)
 		local_irq_disable();
 	}
 	sort_main_extable();
+	printk(" Before trap init: CP0 CONFIG=0x%lx\n", read_c0_config());
 	trap_init();
 	rcu_init();
 	init_IRQ();
