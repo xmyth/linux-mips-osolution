@@ -17,10 +17,13 @@
 #include <linux/suspend.h>
 
 #include <asm/io.h>
+#include <asm/cacheflush.h>
 
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include "sleep.h"
+
+extern void (*flush_cache_all)(void);
 
 u8 sleep_states[ACPI_S_STATE_COUNT];
 
@@ -41,7 +44,7 @@ int acpi_sleep_prepare(u32 acpi_state)
 							     acpi_wakeup_address));
 
 	}
-//	ACPI_FLUSH_CPU_CACHE();
+	flush_cache_all();
 	acpi_enable_wakeup_device_prep(acpi_state);
 #endif
 	acpi_gpe_sleep_prepare(acpi_state);
@@ -116,7 +119,7 @@ static int acpi_pm_enter(suspend_state_t pm_state)
 	unsigned long flags = 0;
 	u32 acpi_state = acpi_target_sleep_state;
 
-//	ACPI_FLUSH_CPU_CACHE();
+	flush_cache_all();
 
 	/* Do arch specific saving of state. */
 	if (acpi_state == ACPI_STATE_S3) {
@@ -243,7 +246,7 @@ static int acpi_hibernation_enter(void)
 	acpi_status status = AE_OK;
 	unsigned long flags = 0;
 
-	ACPI_FLUSH_CPU_CACHE();
+	flush_cache_all();
 
 	local_irq_save(flags);
 	acpi_enable_wakeup_device(ACPI_STATE_S4);

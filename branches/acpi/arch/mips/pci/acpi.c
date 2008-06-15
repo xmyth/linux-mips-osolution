@@ -40,11 +40,12 @@ void acpi_copy_wakeup_routine()
 {
 	printk(KERN_INFO "ACPI: acpi_copy_wakeup_routine\n");
 }
-
+/*
 void do_suspend_lowlevel()
 {
 	printk(KERN_INFO "ACPI: do_suspend_lowlevel\n");
 }
+*/
 /*
 void acpi_blacklisted()
 {
