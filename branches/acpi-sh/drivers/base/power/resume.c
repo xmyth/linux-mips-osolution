@@ -140,6 +140,7 @@ void dpm_power_up(void)
 
 void device_power_up(void)
 {
+	printk(KERN_INFO "device power_up\n");
 	sysdev_resume();
 	dpm_power_up();
 }

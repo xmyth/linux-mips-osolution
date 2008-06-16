@@ -5,15 +5,24 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include <linux/smp_lock.h>
+#include <linux/preempt.h>
+#include <linux/crc32.h>
+#include <linux/irq.h>
+#include <linux/suspend.h>
 #include "via686b.h"  //This file comes from pmon definition
+unsigned long g_crc = 0;
+
+extern void trap_init(void);
+extern void suspend_console(void);
+extern void resume_console(void);
+extern void thaw_processes(void);
+extern void freeze_processes(void);
+extern void (*flush_cache_all)(void);
 
 
-extern void flush_tlb_all(void);
+#define mipssaveregcp0(reg, value) asm volatile("dmfc0 $8, $"#reg"\t\n" "sd $8,%0\t\n":"=m"(value))
 
-#define mipssaveregcp0(reg, value) asm volatile("mfc0 $8, $"#reg"\t\n" "sd $8,%0\t\n":"=m"(value))
-
-#define mipsrestoreregcp0(reg, value) asm volatile("ld $8, 0\t\n" "mtc0 $8, $"#reg"\t\n"::"m"(value))
+#define mipsrestoreregcp0(reg, value) asm volatile("ld $8, 0\t\n" "dmtc0 $8, $"#reg"\t\n"::"m"(value))
 
 
 
@@ -59,24 +68,46 @@ extern void flush_tlb_all(void);
 #define	LSR_RCV_MASK	0x1f
 
 
+extern void trap_init(void);
+extern void suspend_console(void);
+extern void resume_console(void);
+extern void thaw_processes(void);
+extern void freeze_processes(void);
+
 void PrintStrToSerial(unsigned char *buf, unsigned int len)
 {
-	unsigned char v1;
-	int i;
+	volatile unsigned char v1;
+	unsigned int i, j;
 
 	for (i = 0; i < len ; i++)
-	{
+	{	
+		j = 0;
 		do
 		{
-			v1 = *((unsigned char *)(COM1_BASE_ADDR + NS16550_LSR));
-			
+			v1 = *((volatile unsigned char *)(COM1_BASE_ADDR + NS16550_LSR));
+			j++;
 		}
-		while((v1 & LSR_TXRDY) == 0);
+		while((v1 & LSR_TXRDY) == 0 && j < 0x10000);
 
-		*((unsigned char *)(COM1_BASE_ADDR + NS16550_DATA)) = buf[i];	
+		*((volatile unsigned char *)(COM1_BASE_ADDR + NS16550_DATA)) = buf[i];	
 	}
 }
 
+static void EnableDDRConfigSpace()
+{
+        volatile unsigned long  *t2 = 0xffffffffbfe00180;
+        volatile unsigned long  a1 = *t2;
+	 a1 &= 0x6ff;
+        *(t2) = a1;
+}
+
+static void DisableDDRConfigSpace()
+{
+        volatile unsigned long  *t2 = 0xffffffffbfe00180;
+        volatile unsigned long  a1 = *t2;
+	 a1 |= 0x100;
+        *(t2) = a1;
+}
 
 
 struct MIPS_CPU_REG_STATE{
@@ -84,10 +115,14 @@ struct MIPS_CPU_REG_STATE{
 	unsigned long long r[32];
 	unsigned long long cp0[32];
 	unsigned long long f[32];
+	unsigned long long sRA;
+	unsigned char stacksize[10240];
+	unsigned long long i, len;
+	unsigned long long crc;
 };
 
 
-struct MIPS_CPU_REG_STATE * MipsCpuRegState = (struct MIPS_CPU_REG_STATE *)(0xffffffffa0000000 + (255 << 20));
+struct MIPS_CPU_REG_STATE volatile * MipsCpuRegState = (struct MIPS_CPU_REG_STATE volatile *)(0xffffffffa0000000 + (255 << 20));
 
 static void Enter_STR(void)
 {
@@ -125,6 +160,26 @@ static void Enter_STR(void)
 	v0 |= 0x40;
 	*(volatile unsigned char *)(AddrBase + SMBUS_HOST_CONTROL) = v0;
 
+	printk("0x%llx\n", MipsCpuRegState->r[29]);
+	printk("0x%llx\n", *(unsigned long long *)MipsCpuRegState->r[29]);
+
+	//suspend_console();
+
+
+	EnableDDRConfigSpace();
+	*(volatile unsigned long *)(0xffffffffaffffe80) = 0; //Shutdown ODT
+	*(volatile unsigned long *)(0xffffffffaffffe84) = 0; //Shutdown ODT
+
+	volatile unsigned long state = *(volatile unsigned long *)(0xffffffffaffffe34);
+	state |= 1;
+	
+	g_crc = crc32_le(0, (unsigned char *) (0xffffffffaff00000), 0x100000);
+	printk("crc = 0x%llx \n", g_crc);
+
+	*(volatile unsigned long *)(0xffffffffaffffe34) = state;
+	DisableDDRConfigSpace();
+
+
 	do
 	{
 		//Wait
@@ -140,31 +195,76 @@ static void Enter_STR(void)
 		*(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS) = v0;
 		v0 = *(volatile unsigned char *)(AddrBase + SMBUS_HOST_STATUS);
 	}
+	while(1);
 }
 
 
-static int mips_save_ret_addr(void)
+extern void kernel_entry(void);
+
+extern void (*flush_cache_all)(void);
+
+extern void local_flush_tlb_all(void);
+
+
+
+static noinline int mips_save_ret_addr(void)
 {
 	mipssavereg(31, MipsCpuRegState->r[31]);
+	//MipsCpuRegState->r[31] =  (unsigned long long *)start_kernel;
+	printk("%llx \n", MipsCpuRegState->r[31]);
 
-	printk("Return Addr  = %llx  mips_save_ret_addr \n",  MipsCpuRegState->r[31]);
+	flush_cache_all();
 
-	Enter_STR();	
-}
+	local_flush_tlb_all();
+
+	__asm__ volatile ("sync");
 
 
-static int mips_save_register_state(void)
-{
-	mipssavereg(31, MipsCpuRegState->r[31]);
-
-	printk("Return Addr  = %llx  mips_save_register_state \n",  MipsCpuRegState->r[31]);
-
-//	printk("%lx \n", *(unsigned long *)0x9800000000000000);
+	g_crc = crc32_le(0, (unsigned char *) (0xffffffffaff00000), 0x100000);
+	printk("crc = 0x%llx \n", g_crc);
 	
-	unsigned char v1;
-	int i;
-	int len = 25;
+	asm volatile("li $3, 0Xffffffffbfc01108\t\n"::);
+	asm volatile ("jr $3\t\n" "nop\t\n"::);
+
+	//__asm__ volatile ("li a0, 0xffffffffbfc01108\t\n");
+	//__asm__ volatile ("jr a0\t\n" "nop\t\n");
+
+	//Enter_STR();	
+}
+
+static noinline void SerialOutput()
+{
+	volatile unsigned char v1;
+	unsigned long long i;
+	unsigned long long len = 25;
 	const char * buf= "Welcome Back From STR! \n\r";
+	unsigned long long j;
+	
+
+	for (i = 0; i < len ; i++)
+	{
+		do
+		{
+			v1 = *((volatile unsigned char *)(COM1_BASE_ADDR + NS16550_LSR));
+			
+		}
+		while((v1 & LSR_TXRDY) == 0);
+
+		*((volatile unsigned char *)(COM1_BASE_ADDR + NS16550_DATA)) = buf[i];	
+	}
+}
+
+
+
+static noinline int mips_save_register_state(void)
+{
+//	volatile unsigned int i, len;
+	unsigned int crc = 0;
+
+	//printk("Stack %llx\n", &i);
+	//
+	//
+	local_irq_disable();
 
 	MipsCpuRegState->version = 0xaa554321131455aa;
 
@@ -199,6 +299,7 @@ static int mips_save_register_state(void)
 	mipssavereg(28, MipsCpuRegState->r[28]);  
 	mipssavereg(29, MipsCpuRegState->r[29]);  
 	mipssavereg(30, MipsCpuRegState->r[30]);  
+	mipssavereg(31, MipsCpuRegState->sRA);
 
 	
 /*	
@@ -272,72 +373,78 @@ static int mips_save_register_state(void)
 
 
 
+
+	printk("0x%llx\n", MipsCpuRegState->r[29]);
+	printk("0x%llx\n", *(unsigned long long *)MipsCpuRegState->r[29]);
+//	printk("0x%llx \n", *(unsigned long long *)(MipsCpuRegState->r[29]+8));
+
+//	suspend_console();
+
+	MipsCpuRegState->len = (unsigned long long)&(MipsCpuRegState->i);
+	
+	mipsrestorereg(29, MipsCpuRegState->len);
+
+
 	mips_save_ret_addr();
 
+	crc = crc32_le(0, (unsigned char *) (0xffffffffaff00000), 0x100000);
 
-	for (i = 0; i < len ; i++)
-	{
-		do
-		{
-			v1 = *((unsigned char *)(COM1_BASE_ADDR + NS16550_LSR));
-			
-		}
-		while((v1 & LSR_TXRDY) == 0);
+	
+	//PrintStrToSerial("Return From STR1!\r\n", 18);
 
-		*((unsigned char *)(COM1_BASE_ADDR + NS16550_DATA)) = buf[i];	
-	}
+	MipsCpuRegState->len = (unsigned long long)&(MipsCpuRegState->i);
+	
+	mipsrestorereg(29, MipsCpuRegState->len);
+
+	//resume_console();
+
+	printk("crc = 0x%lx \n", crc);
+
+	printk("Return From STR\n");
+	
+	//trap_init();
+	
+	*(volatile char *)(0xffffffffbfe0011c+4) = 0;
+	*(volatile char *)(0xffffffffbfe0011c) = 0;
+
+	//MipsCpuRegState->version = 0xbb554321131455bb;
+
+	//mipsrestorereg(31, MipsCpuRegState->sRA);
+	for (MipsCpuRegState->i = 0; MipsCpuRegState->i < 0x500000; MipsCpuRegState->i++)
+		MipsCpuRegState->len++;
+
+
+	MipsCpuRegState->len = 0;
+
+
+	*(volatile char *)(0xffffffffbfe0011c) = 0xf;
+	
+	for (MipsCpuRegState->i = 0; MipsCpuRegState->i < 0x500000; MipsCpuRegState->i++)
+			MipsCpuRegState->len++;
+
+	MipsCpuRegState->len = 0;
+	*(volatile char *)(0xffffffffbfe0011c) = 0x0;
+
+	for (MipsCpuRegState->i = 0; MipsCpuRegState->i < 0x500000; MipsCpuRegState->i++)
+			MipsCpuRegState->len++;
+
 
 //	PrintStrToSerial("Welcome Back From STR! \n\r", 25);
 //	flush_tlb_all();
+
+	mipsrestorereg(29, MipsCpuRegState->r[29]);
+
+
+	*(unsigned long long *)MipsCpuRegState->r[29] = MipsCpuRegState->sRA;
+
+	printk("0x%llx\n", MipsCpuRegState->r[29]);
+	printk("0x%llx\n", *(unsigned long long *)MipsCpuRegState->r[29]);
 
 }
 
 
 static int __init acpi_module_init(void)
 {
-	unsigned int i;
-	mipssavereg(31, MipsCpuRegState->r[31]);
-
-	printk("Return Addr  = %llx  acpi_module_init \n",  MipsCpuRegState->r[31]);
-	
-	lock_kernel();
-
-	mips_save_register_state();
-
-	for (i = 0; i < 32; i++)
-	  printk("cp0_%d = %llx \n ",i, MipsCpuRegState->cp0[i]);
-	
-	for (i = 0; i < 32; i++)
-	  printk("r%d = %llx \n ",i, MipsCpuRegState->r[i]);
-
-
-	printk("Restore Memory = %llx\n", MipsCpuRegState);
-	
-	unlock_kernel();
-
-
-//	printk("%lx \n", *(unsigned long *)0x9800000000000000);
-
-//	for (i = 0; i < 32; i++)
-//	  printk("f%d = %llx \n ",i, MipsCpuRegState->f[i]);
-	  
-//	asm volatile(
-//		"mfc0 $8,$12\t\n"
-//		"sd $8, MipsCpuRegState->%0\t\n":"=m"(cp0)
-//	);
-//
-
-/*	for (i = 0; i < 256; i++)
-	{
-		printk("%4x", *((unsigned long *)(0xffffffffa0000000 + (255 << 20)+ i * 4)));
-		if ((i + 1) % 16 == 0)
-			printk("\n");
-	//	*((unsigned long *)(0xffffffffa0000000 + (255 << 20) + i * 4)) = 0;
-	}*/
-
-
-	
-
 	printk(KERN_INFO "acpi_module: ACPI Module initialized.\n");
 
 	return 0;
