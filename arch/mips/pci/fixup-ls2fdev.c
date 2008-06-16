@@ -243,6 +243,7 @@ static void __init loongson2e_686b_func5_fixup(struct pci_dev *pdev)
 
 	pci_write_config_byte(pdev, 0x42, 0x0);
 }
+
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686,
 			 loongson2e_686b_func0_fixup);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1,
@@ -255,3 +256,5 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686_5,
 			 loongson2e_686b_func5_fixup);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,
 			 loongson2e_nec_fixup);
+
+			 

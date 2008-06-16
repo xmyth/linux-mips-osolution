@@ -29,6 +29,8 @@
 #include <linux/bootmem.h>
 #include <linux/init.h>
 #include <linux/irq.h>
+#include <linux/module.h>
+#include <linux/crc32.h>
 
 #include <asm/bootinfo.h>
 #include <asm/mc146818-time.h>
@@ -98,13 +100,14 @@ void __init plat_mem_setup(void)
 		highmemsize = memsize - 256;
 		memsize = 256;
 	}
-	memsize = 254;
+	memsize = 253;
+	highmemsize=0;
 	if (highmemsize > 0x700)
 		highmemsize = 0x700;
 
 	add_memory_region(0, (1 << 20), BOOT_MEM_RESERVED);
 	add_memory_region((1<< 20), (memsize << 20), BOOT_MEM_RAM);
-	add_memory_region(255<<20, (1 << 20), BOOT_MEM_RESERVED);
+	//add_memory_region(255<<20, (1 << 20), BOOT_MEM_RESERVED);
 #ifdef CONFIG_64BIT
 	*(unsigned volatile long long *) 0x900000003ff00010 = 0x0000000080000000; //base
 	*(unsigned volatile long long *) 0x900000003ff00030 = 0xffffffff80000000; //mask
@@ -136,3 +139,4 @@ void __init plat_mem_setup(void)
 #endif
 
 }
+

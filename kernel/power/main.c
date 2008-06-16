@@ -140,8 +140,10 @@ int suspend_enter(suspend_state_t state)
 		goto Done;
 	}
 	error = pm_ops->enter(state);
+	printk(KERN_INFO "back to suspend_enter\n");
 	device_power_up();
  Done:
+	printk(KERN_INFO "enable irq\n");
 	arch_suspend_enable_irqs();
 	BUG_ON(irqs_disabled());
 	return error;
