@@ -81,7 +81,7 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 	return 0;
 }
 
-static void __init loongson2e_nec_fixup(struct pci_dev *pdev)
+static void loongson2e_nec_fixup(struct pci_dev *pdev)
 {
 	unsigned int val;
 
@@ -93,7 +93,7 @@ static void __init loongson2e_nec_fixup(struct pci_dev *pdev)
 	pci_write_config_dword(pdev, 0xe4, 1 << 5);
 }
 
-static void __init loongson2e_686b_func0_fixup(struct pci_dev *pdev)
+static void loongson2e_686b_func0_fixup(struct pci_dev *pdev)
 {
 	unsigned char c;
 
@@ -168,7 +168,7 @@ static void __init loongson2e_686b_func0_fixup(struct pci_dev *pdev)
 	printk(KERN_INFO"via686b fix: ISA bridge done\n");
 }
 
-static void __init loongson2e_686b_func1_fixup(struct pci_dev *pdev)
+static void loongson2e_686b_func1_fixup(struct pci_dev *pdev)
 {
 	printk(KERN_INFO"via686b fix: IDE\n");
 
@@ -201,19 +201,19 @@ static void __init loongson2e_686b_func1_fixup(struct pci_dev *pdev)
 	printk(KERN_INFO"via686b fix: IDE done\n");
 }
 
-static void __init loongson2e_686b_func2_fixup(struct pci_dev *pdev)
+static void loongson2e_686b_func2_fixup(struct pci_dev *pdev)
 {
 	/* irq routing */
 	pci_write_config_byte(pdev, PCI_INTERRUPT_LINE, 10);
 }
 
-static void __init loongson2e_686b_func3_fixup(struct pci_dev *pdev)
+static void loongson2e_686b_func3_fixup(struct pci_dev *pdev)
 {
 	/* irq routing */
 	pci_write_config_byte(pdev, PCI_INTERRUPT_LINE, 11);
 }
 
-static void __init loongson2e_686b_func5_fixup(struct pci_dev *pdev)
+static void loongson2e_686b_func5_fixup(struct pci_dev *pdev)
 {
 	unsigned int val;
 	unsigned char c;
@@ -244,17 +244,33 @@ static void __init loongson2e_686b_func5_fixup(struct pci_dev *pdev)
 	pci_write_config_byte(pdev, 0x42, 0x0);
 }
 
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686,
-			 loongson2e_686b_func0_fixup);
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1,
-			 loongson2e_686b_func1_fixup);
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_2,
-			 loongson2e_686b_func2_fixup);
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_3,
-			 loongson2e_686b_func3_fixup);
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686_5,
-			 loongson2e_686b_func5_fixup);
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,
-			 loongson2e_nec_fixup);
 
-			 
+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686,   loongson2e_686b_func0_fixup);
+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1, loongson2e_686b_func1_fixup);
+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_2, loongson2e_686b_func2_fixup);
+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_3, loongson2e_686b_func3_fixup);
+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686_5, loongson2e_686b_func5_fixup);
+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,		loongson2e_nec_fixup);
+
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686,   loongson2e_686b_func0_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1, loongson2e_686b_func1_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_2, loongson2e_686b_func2_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_3, loongson2e_686b_func3_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686_5, loongson2e_686b_func5_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,		loongson2e_nec_fixup);
+
+
+/*
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686,
+			 loongson2e_686b_func0_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1,
+			 loongson2e_686b_func1_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_2,
+			 loongson2e_686b_func2_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_3,
+			 loongson2e_686b_func3_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686_5,
+			 loongson2e_686b_func5_fixup);
+DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,
+			 loongson2e_nec_fixup);
+*/
