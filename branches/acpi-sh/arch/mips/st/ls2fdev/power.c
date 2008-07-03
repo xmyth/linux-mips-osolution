@@ -15,19 +15,31 @@
 #include <linux/dmi.h>
 #include <linux/device.h>
 #include <linux/suspend.h>
+#include <asm/cacheflush.h>
+
 
 #include <asm/io.h>
 
-extern void (*flush_cache_all)(void);
 extern void local_flush_tlb_all(void);
 
 u32 saved_nb_registers[52];
+u32 saved_nb_pci_header[64];
 
 void save_nb_registers(void) {
 	int i;
 
 	for (i = 0; i < 52; i++) {
 		saved_nb_registers[i] = *(volatile u32 *)(0xffffffffbfe00100 + i * 4);
+		if (i == 14) {
+			printk("INTEN: Offset 0x%x:0x%x\n", i*4, saved_nb_registers[i]);
+		}
+		if (i == 0x20) {
+			printk("Chip_config0: Offset 0x%x:0x%x\n", i*4, saved_nb_registers[i]);
+		}
+	}
+
+	for (i = 0; i < 64; i++) {
+		saved_nb_pci_header[i] = *(volatile u32 *)(0xffffffffbfe00000 + i * 4);
 	}
 }
 
@@ -36,14 +48,29 @@ void restore_nb_registers(void) {
 	int i;
 	for (i = 0; i < 52; i++) {
 		if ((*(volatile u32 *)(0xffffffffbfe00100 + i * 4)) != saved_nb_registers[i]) {
+			if (i == 0xe) {
+				*(volatile u32 *)(0xffffffffbfe00134) = ~0; 
+				*(volatile u32 *)(0xffffffffbfe00130) = saved_nb_registers[i]; 
+			}
+			
+			if (i >= 0xc && i <= 0xf)
+				continue;
+
 			*(volatile u32 *)(0xffffffffbfe00100 + i * 4) = saved_nb_registers[i];
+			printk("NB IO Writing Back 0x%x with 0x%x\n", i*4, saved_nb_registers[i]);
+		}
+	}
+	for (i = 0; i < 64; i++) {
+		if ((*(volatile u32 *)(0xffffffffbfe00000 + i * 4)) != saved_nb_pci_header[i]) {
+			*(volatile u32 *)(0xffffffffbfe00000 + i * 4) = saved_nb_pci_header[i];
+			printk("NB pci header Writing Back 0x%x with 0x%x\n", i*4, saved_nb_pci_header[i]);
 		}
 	}
 }
 
 int acpi_sleep_prepare(void)
 {
-	flush_cache_all();
+	__flush_cache_all();
 	local_flush_tlb_all();
 	return 0;
 }
@@ -88,25 +115,31 @@ static int acpi_pm_prepare(suspend_state_t pm_state)
  *	It's unfortunate, but it works. Please fix if you're feeling frisky.
  */
 
+
+extern void trap_init(void);
+
+extern int g_debug_dumpstack;
+
 static int acpi_pm_enter(suspend_state_t pm_state)
 {
 
 	unsigned long flags = 0;
 	//printk("acpi_pm_enter\n");
 	
-	local_irq_save(flags);
 	save_nb_registers();
 
-	flush_cache_all();
+	__flush_cache_all();
 
+	local_irq_save(flags);
 
 	do_suspend_lowlevel();
+	local_flush_tlb_all();
 	restore_nb_registers();
-
 	local_irq_restore(flags);
+
 	//printk(KERN_DEBUG "Back to C!\n");
 	//printk(KERN_INFO "acpi_pm_enter exit\n");
-
+//	g_debug_dumpstack = 1;
 
 	return 0;
 }
@@ -122,7 +155,7 @@ static int acpi_pm_enter(suspend_state_t pm_state)
 static int acpi_pm_finish(suspend_state_t pm_state)
 {
 	printk("acpi_pm_finish\n");
-	local_flush_tlb_all();
+	printk("crc: %lx, %lx\n", *(unsigned long *)(0xffffffffafe00300), *(unsigned long *)(0xffffffffafe00310) );
 	return 0;
 }
 
