@@ -188,6 +188,15 @@ LEAF(do_suspend_lowlevel)
 	dmfc0 k1, $31
 	sd k1, 0x1f8(k0)
 	ssnop
+
+	mfhi k1
+	sd k1, 0x208(k0)
+	ssnop
+	
+	mflo k1
+	sd k1, 0x210(k0)
+	ssnop
+
 	sync
 	ssnop
 /*
@@ -203,22 +212,6 @@ LEAF(do_suspend_lowlevel)
 	ssnop
 */
 
-/*
-	dla k0, 
-	cache Index_Writeback_Inv_SD, 0x00(k0)
-	cache Index_Writeback_Inv_SD, 0x20(k0)
-	cache Index_Writeback_Inv_SD, 0x40(k0)
-	cache Index_Writeback_Inv_SD, 0x60(k0)
-	cache Index_Writeback_Inv_SD, 0x80(k0)
-	cache Index_Writeback_Inv_SD, 0xa0(k0)
-	cache Index_Writeback_Inv_SD, 0xc0(k0)
-	cache Index_Writeback_Inv_SD, 0xe0(k0)
-	cache Index_Writeback_Inv_SD, 0x100(k0)
-	cache Index_Writeback_Inv_SD, 0x120(k0)
-	cache Index_Writeback_Inv_SD, 0x140(k0)
-	cache Index_Writeback_Inv_SD, 0x160(k0)
-
-*/
 	/* Now set up the scratch registers so the boot rom will
 	 * return to this point upon wakeup.
 	 */
@@ -243,6 +236,7 @@ LEAF(do_suspend_lowlevel)
 	.set	mips0
 */
 sdsleep:
+/*
 	and $1, zero
 	and $2, zero
 	and $3, zero
@@ -275,69 +269,30 @@ sdsleep:
 	and $30, zero
 	and $31, zero
 	ssnop
-
-
-	dmtc0 zero, $0
-	dmtc0 zero, $1
-	dmtc0 zero, $2
-	dmtc0 zero, $3
-	//dmtc0 zero, $4
-	//dmtc0 zero, $5
-	dmtc0 zero, $6
-	dmtc0 zero, $7
-	dmtc0 zero, $8
-	dmtc0 zero, $9
-	dmtc0 zero, $10
-	dmtc0 zero, $11
-	//dmtc0 zero, $12
-	dmtc0 zero, $13
-	dmtc0 zero, $14
-	dmtc0 zero, $15
-	li k0, 0x00030932
-	dmtc0 k0, $16;
-	dmtc0 zero, $17
-	dmtc0 zero, $18
-	//dmtc0 zero, $19
-	dmtc0 zero, $20
-	//dmtc0 zero, $21
-	dmtc0 zero, $22
-	//dmtc0 zero, $23
-	dmtc0 zero, $24
-	dmtc0 zero, $25
-	//dmtc0 zero, $26
-	//dmtc0 zero, $27
-	dmtc0 zero, $28
-	dmtc0 zero, $29
-	//dmtc0 zero, $30
-	//dmtc0 zero, $31
 	ehb
-	dmfc0 k0, $16
-	or k0, k0, 3
-	dmtc0 k0, $16
-	ehb
-
-	li k0, 0x00400000
-	ssnop
-	dmtc0 k0, $12
-	ehb
-	li k0, 0x3000fce0
-	ssnop
-	dmtc0 k0, $12
-	ehb
-
+*/	
 	dli k0, 0xffffffff80000000
-	dli k1, 0xffffffff90000000
+	dli k1, 0xffffffff8f000000
 1:
 	ld zero, 0(k0)
-	daddiu k0,k0,4
+	daddiu k0,k0,8
 	bne k0,k1,1b
 	nop
+	ssnop
 
-/*
-	dli k0, 0xffffffff803892b0
+	dli k0, 0x9800000000000000
+	dli k1, 0x980000000f000000
+1:
+	ld zero, 0(k0)
+	daddiu k0,k0,8
+	bne k0,k1,1b
+	nop
+	ssnop
+/*	
+	dli k0, 0xffffffff803896d0
 	dli k1, 0xffffffffafe00300
 	move a0, zero
-	dli a1, 0xffffffff80000000
+	dli a1, 0xffffffffa0000000
 	li a2,  0xfe00000
 
 	jalr k0
@@ -347,14 +302,14 @@ sdsleep:
 	ssnop
 
 	move a0, zero
-	dli a1, 0xffffffffa0000000
+	dli a1, 0xffffffff80000000
 	li a2, 0xfe00000
 	jalr k0
 	nop
 	sd v0, 8(k1)
 	ssnop
-*/	
 
+*/	
 	.set at
 	dli k0, 0xffffffffbfd00000
 	li k1, 0x04
@@ -379,7 +334,7 @@ sdsleep:
 	sync
 	dla k0, 1f
 	ssnop
-/*	
+	
 	ld zero, 0x00(k0)
 	ld zero, 0x08(k0)
 	ld zero, 0x10(k0)
@@ -402,7 +357,7 @@ sdsleep:
 	ld zero, 0x98(k0)
 	ld zero, 0xa0(k0)
 	ld zero, 0xa8(k0)
-*/
+	
 1:	
 	dli k0, 0xffffffffbfe00180
 	lw k1, 0x0(k0)
@@ -430,7 +385,16 @@ sdsleep:
 	.align 4
 wakeup:	
 	ssnop
-	
+/*
+	dli k0, 0xffffffff80000000
+
+	dli k1, 0xffffffff8f000000
+1:
+	ld zero, 0(k0)
+	daddiu k0,k0,8
+	bne k0,k1,1b
+	nop
+*/	
 	dli k0, 0x900000003ff00000
 	dli k1, 0x0000000080000000
 	ssnop
@@ -468,6 +432,18 @@ wakeup:
 	sw k1, 0x168(k0)
 	ssnop
 
+	ehb
+
+	dli k0, 0xffffffffafe00000
+	ssnop
+	ld k1, 0x208(k0)
+	mthi k1
+	nop
+	ld k1, 0x210(k0)
+	mtlo k1
+	nop
+	ssnop
+/*
 	mfc0 t0, $10
 	mtc0 zero, $2
 	mtc0 zero, $3
@@ -481,20 +457,48 @@ wakeup:
 	daddu v1, k0, k1
 	dmtc0 v1, $10
 	dmtc0 v0, $0
-	ehb
+ 	ehb
 	tlbwi
 	daddiu v0,1
 	bne v0, t1, 1b
 	nop
-
+	mtc0 t0,$10
 	ehb
+*/
 
-	dmtc0 t0, $10
-	and t0,4
-	dmtc0 t0, $22
-	ehb
+/*	
+	dli t0, 0xffffffff803896d0
+	dli t1, 0xffffffffafe00300
+	move a0, zero
+	dli a1, 0xffffffffa0000000
+	li a2,  0xfe00000
 
+	jalr t0
+	nop
+	ssnop
+	sd v0, 0(t1)
 
+	
+	dli t0, 0xffffffff80000000
+
+	dli t1, 0xffffffff8f000000
+1:
+	ld zero, 0(t0)
+	daddiu t0,t0,8
+	bne t0,t1,1b
+	nop
+
+	dli t0, 0xffffffff803896d0
+	dli t1, 0xffffffffafe00300
+	move a0, zero
+	dli a1, 0xffffffff80000000
+	li a2,  0xfe00000
+
+	jalr t0
+	nop
+	ssnop
+	sd v0, 0x10(t1)
+*/
 	dli k0, 0xffffffffafe00000
 	ssnop
 	ld	$1, 0x00(k0)
