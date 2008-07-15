@@ -2,7 +2,7 @@
 #include <linux/preempt.h>
 
 extern const void __nosave_begin, __nosave_end;
-
+/*
 static struct __saved_context 
 {
 	unsigned long v[2];
@@ -19,11 +19,11 @@ static struct __saved_context
 	unsigned long cp0[32];
 	
 } saved_context;
-
+*/
 void __save_processor_state(void)
 {
-       preempt_disable();
-
+      // preempt_disable();
+/*
        asm volatile ("dsubu $29, 8");
        asm volatile ("sd $2, ($29)");
 
@@ -61,17 +61,18 @@ void __save_processor_state(void)
 
        asm volatile ("sd $2, (%0)" : : "r" (&saved_context.v[0]) : "$2");
        asm volatile ("sd $29, (%0)" : : "r" (&saved_context.sp));
-
+*/
        /*
         * special registers
         */
-       asm volatile ("mfhi %0" : "=r" (saved_context.hi));
+/*       asm volatile ("mfhi %0" : "=r" (saved_context.hi));
        asm volatile ("mflo %0" : "=r" (saved_context.lo));
-       // load/link register??
+  */     // load/link register??
 
        /*
         * coprocessor 0 registers (inclde/asm-mips/mipsregs.h)
         */
+	   /*
        asm volatile ("dmfc0 %0, $0" : "=r" (saved_context.cp0[0]));
        asm volatile ("dmfc0 %0, $1" : "=r" (saved_context.cp0[1]));
        asm volatile ("dmfc0 %0, $2" : "=r" (saved_context.cp0[2]));
@@ -104,6 +105,7 @@ void __save_processor_state(void)
        asm volatile ("dmfc0 %0, $29" : "=r" (saved_context.cp0[29]));
        asm volatile ("dmfc0 %0, $30" : "=r" (saved_context.cp0[30]));
        asm volatile ("dmfc0 %0, $31" : "=r" (saved_context.cp0[31]));
+	   */
 }
 
 void save_processor_state(void)
@@ -118,13 +120,14 @@ void __restore_processor_state(void)
        /*
         * first restore %ds, so we can access our data properly
         */
-       asm volatile (".align 4");
+   //    asm volatile (".align 4");
 //      asm volatile ("movw %0, %%ds" :: "r" ((u16)__KERNEL_DS));
 
 
        /*
         * coprocessor 0 registers (inclde/asm-mips/mipsregs.h)
         */
+	   /*
        asm volatile ("dmtc0 %0, $0" : : "r" (saved_context.cp0[0]));
        asm volatile ("dmtc0 %0, $1" : : "r" (saved_context.cp0[1]));
        asm volatile ("dmtc0 %0, $2" : : "r" (saved_context.cp0[2]));
@@ -157,13 +160,13 @@ void __restore_processor_state(void)
        asm volatile ("dmtc0 %0, $29" : : "r" (saved_context.cp0[29]));
        asm volatile ("dmtc0 %0, $30" : : "r" (saved_context.cp0[30]));
        asm volatile ("dmtc0 %0, $31" : : "r" (saved_context.cp0[31]));
-
+*/
        /*
         * special registers
         */
-       asm volatile ("mthi %0" : : "r" (saved_context.hi));
+  /*     asm volatile ("mthi %0" : : "r" (saved_context.hi));
        asm volatile ("mtlo %0" : : "r" (saved_context.lo));
-
+*/
        /*
         * the other general registers
         *
@@ -173,7 +176,7 @@ void __restore_processor_state(void)
         * bad since we don't have a stack set up when we enter, and we
         * want to preserve the values on exit. So, we set them manually.
         */
-       asm volatile ("ld $3, (%0)" : : "r" (&saved_context.v[1]));
+ /*      asm volatile ("ld $3, (%0)" : : "r" (&saved_context.v[1]));
        asm volatile ("ld $4, (%0)" : : "r" (&saved_context.a[0]));
        asm volatile ("ld $5, (%0)" : : "r" (&saved_context.a[1]));
        asm volatile ("ld $6, (%0)" : : "r" (&saved_context.a[2]));
@@ -204,8 +207,8 @@ void __restore_processor_state(void)
        asm volatile ("ld $31, (%0)" : : "r" (&saved_context.ra));
        // Good job 'v0'. It's your turn!
        asm volatile ("ld $2, (%0)" : : "r" (&saved_context.v[0]));
-
-       preempt_enable();
+*/
+       //preempt_enable();
 }
 
 void restore_processor_state(void)
