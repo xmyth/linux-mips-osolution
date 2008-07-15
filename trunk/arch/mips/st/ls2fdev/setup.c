@@ -108,7 +108,7 @@ void __init plat_mem_setup(void)
 	*(unsigned volatile long long *) 0x900000003ff00050 = 0; //map
 	
 	if (highmemsize > 0) {
-		add_memory_region(0x90000000, highmemsize << 20, BOOT_MEM_RAM);
+		//add_memory_region(0x90000000, highmemsize << 20, BOOT_MEM_RAM);
 	}
 #endif
 
