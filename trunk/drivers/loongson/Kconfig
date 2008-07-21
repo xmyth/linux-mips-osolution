@@ -15,4 +15,6 @@ config LS_APM_EMU
 	select APM_EMULATION
 config LS_XGI_MODE
 	tristate "Switch XGI Mode"
+config LS_VGA_POST
+	tristate "LS VGA POST"
 endif
