@@ -199,18 +199,6 @@ LEAF(do_suspend_lowlevel)
 
 	sync
 	ssnop
-/*
-	dli k1, 0xffffffff80389250
-	dli a0, 0x00
-	dli a1, 0xffffffffa0000000
-	dli a2, 0xfe00000
-	
-	jalr k1
-	nop
-
-	sd v0, 0x208(k0)
-	ssnop
-*/
 
 	/* Now set up the scratch registers so the boot rom will
 	 * return to this point upon wakeup.
@@ -223,54 +211,8 @@ LEAF(do_suspend_lowlevel)
 	ssnop
 	nop
 
-/* Put SDRAM into self refresh.  Preload instructions into cache,
- * issue a precharge, then auto refresh, then sleep commands to it.
- */
-/*
- 	la	t0, sdsleep
-	.set	mips3
- 	cache	0x14, 0(t0)
- 	cache	0x14, 32(t0)
- 	cache	0x14, 64(t0)
- 	cache	0x14, 96(t0)
-	.set	mips0
-*/
 sdsleep:
 /*
-	and $1, zero
-	and $2, zero
-	and $3, zero
-	and $4, zero
-	and $5, zero
-	and $6, zero
-	and $7, zero
-	and $8, zero
-	and $9, zero
-	and $10, zero
-	and $11, zero
-	and $12, zero
-	and $13, zero
-	and $14, zero
-	and $15, zero
-	and $16, zero
-	and $17, zero
-	and $18, zero
-	and $19, zero
-	and $20, zero
-	and $21, zero
-	and $22, zero
-	and $23, zero
-	and $24, zero
-	and $25, zero
-	and $26, zero
-	and $27, zero
-	and $28, zero
-	and $29, zero
-	and $30, zero
-	and $31, zero
-	ssnop
-	ehb
-*/	
 	dli k0, 0xffffffff80000000
 	dli k1, 0xffffffff8f000000
 1:
@@ -288,27 +230,6 @@ sdsleep:
 	bne k0,k1,1b
 	nop
 	ssnop
-/*	
-	dli k0, 0xffffffff803896d0
-	dli k1, 0xffffffffafe00300
-	move a0, zero
-	dli a1, 0xffffffffa0000000
-	li a2,  0xfe00000
-
-	jalr k0
-	nop
-	ssnop
-	sd v0, 0(k1)
-	ssnop
-
-	move a0, zero
-	dli a1, 0xffffffff80000000
-	li a2, 0xfe00000
-	jalr k0
-	nop
-	sd v0, 8(k1)
-	ssnop
-
 */	
 	.set at
 	dli k0, 0xffffffffbfd00000
@@ -385,16 +306,6 @@ sdsleep:
 	.align 4
 wakeup:	
 	ssnop
-/*
-	dli k0, 0xffffffff80000000
-
-	dli k1, 0xffffffff8f000000
-1:
-	ld zero, 0(k0)
-	daddiu k0,k0,8
-	bne k0,k1,1b
-	nop
-*/	
 	dli k0, 0x900000003ff00000
 	dli k1, 0x0000000080000000
 	ssnop
@@ -443,62 +354,7 @@ wakeup:
 	mtlo k1
 	nop
 	ssnop
-/*
-	mfc0 t0, $10
-	mtc0 zero, $2
-	mtc0 zero, $3
-
-	move v0, zero
-	dli k0, 0xffffffff80000000
-	move t1, zero
-	or t1, t1, 64
-1:
-	dsll k1, v0, 15
-	daddu v1, k0, k1
-	dmtc0 v1, $10
-	dmtc0 v0, $0
- 	ehb
-	tlbwi
-	daddiu v0,1
-	bne v0, t1, 1b
-	nop
-	mtc0 t0,$10
-	ehb
-*/
-
-/*	
-	dli t0, 0xffffffff803896d0
-	dli t1, 0xffffffffafe00300
-	move a0, zero
-	dli a1, 0xffffffffa0000000
-	li a2,  0xfe00000
-
-	jalr t0
-	nop
-	ssnop
-	sd v0, 0(t1)
-
 	
-	dli t0, 0xffffffff80000000
-
-	dli t1, 0xffffffff8f000000
-1:
-	ld zero, 0(t0)
-	daddiu t0,t0,8
-	bne t0,t1,1b
-	nop
-
-	dli t0, 0xffffffff803896d0
-	dli t1, 0xffffffffafe00300
-	move a0, zero
-	dli a1, 0xffffffff80000000
-	li a2,  0xfe00000
-
-	jalr t0
-	nop
-	ssnop
-	sd v0, 0x10(t1)
-*/
 	dli k0, 0xffffffffafe00000
 	ssnop
 	ld	$1, 0x00(k0)

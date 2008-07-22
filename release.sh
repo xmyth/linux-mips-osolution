@@ -9,6 +9,9 @@ if [ "$#" -eq 1 ] && [ "$1" == "xgi" ];then
 elif [ "$#" -eq 1 ] && [ "$1" == "nore" ]; then
 	echo "no clean"
 	CLEANALL=false
+elif [ "$#" -eq 1 ] && [ "$1" == "pm" ]; then
+	echo "build for PM"
+	CONFIG_NAME=ls2fdev_pm
 else
 	echo "Build sisfb as video driver"
 fi

@@ -87,10 +87,6 @@ BIOS image as the BIOS that is used and emulated at 0xC0000.
 ****************************************************************************/
 int X86API BE_init(u32 debugFlags, int memSize, BE_VGAInfo * info, int shared)
 {
-#if !defined(__DRIVER__)  && !defined(__KERNEL__)
-
-	PM_init();
-#endif
 	memset(&M, 0, sizeof(M));
 	if (memSize < 20480){
 		printf("Emulator requires at least 20Kb of memory!\n");
@@ -111,18 +107,8 @@ int X86API BE_init(u32 debugFlags, int memSize, BE_VGAInfo * info, int shared)
 		extern pci_dev_t vga_dev;
 		if(!vga_dev) return 0;
 		_BE_env.busmem_base = 0xffffffffb00a0000;	/* it's fixed address for legacy VGA card*/
-		//_BE_env.busmem_base = (ulong)pci_mem_to_phys(vga_dev, _BE_env.busmem_base);
-#ifdef DEBUG_VGA
-		printf("_BE_env.busmem_base = 0x%x\n",_BE_env.busmem_base);
-#endif
 	}
-#else	
-	_BE_env.busmem_base = (unsigned long)malloc(128 * 1024);
 #endif
-	if ((void *)_BE_env.busmem_base == NULL){
-		printf("Biosemu:Out of memory!");
-		return 0;
-	}
 	M.x86.debug = debugFlags;
 	_BE_bios_init((u32*)info->LowMem);
 	X86EMU_setupMemFuncs(&_BE_mem);
@@ -243,7 +229,6 @@ Cleans up and exits the emulator.
 void X86API BE_exit(void)
 {
 	if (M.mem_base) kfree((void*)M.mem_base);
-	if (_BE_env.busmem_base) kfree((void *)_BE_env.busmem_base);
 }
 
 /****************************************************************************

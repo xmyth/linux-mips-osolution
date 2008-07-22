@@ -55,11 +55,6 @@ LEAF(swsusp_arch_resume)
 	bnez		s0, 1b
 	nop
 
-//	ld s0, 0
-	nop
-
-	
-/*	
 	mfc0 t0, $10
 	mtc0 zero, $2
 	mtc0 zero, $3
@@ -80,10 +75,8 @@ LEAF(swsusp_arch_resume)
 	nop
 	mtc0 t0,$10
 	ehb
-
-	li v0, 0
-*/
-    REG_L		s0, saved_reg_s0
+    
+	REG_L		s0, saved_reg_s0
     REG_L		s1, saved_reg_s1
     REG_L		s2, saved_reg_s2
     REG_L		s3, saved_reg_s3

@@ -133,51 +133,7 @@ NOTE: This function leaves the original memory aperture disabled by leaving
 ****************************************************************************/
 static unsigned long PCI_findBIOSAddr(pci_dev_t pcidev, int *bar)
 {
-/*	base, size;
-	{
-		u16 venderid, did;
-		pci_read_config_word(pcidev, PCI_VENDOR_ID, &venderid);
-		pci_read_config_word(pcidev, PCI_DEVICE_ID, &did);
-		//if((venderid == PCI_VENDOR_ID_XGI) && (did == PCI_DEVICE_ID_XGI_Z9))
-		{
-			base = (u32)z9sl10810_rom_data;//(u32)ch7a1z9s_data;
-			printf("Using Z9 VBIOS Database in U-Boot...\n");
-			printf("%lx, %lx\n", base, z9sl10810_rom_data);
-
-			return base;
-		}
-	}*/
 	return z9sl10810_rom_data;
-	/*
-#ifdef CONFIG_STLS
-	{
-		pci_read_config_dword(pcidev, PCI_ROM_ADDRESS, &base);
-		if((base &~ 0xff) != 0x0) {
-			pci_write_config_dword(pcidev, PCI_ROM_ADDRESS, base | 0x1);
-			base = pci_mem_to_phys(pcidev, (base &~ 0xff));
-			printf("Using VBIOS at 0x%x\n", base);
-			return base;
-		}
-	}
-	
-#endif
-	for (*bar = 0x10; *bar <= 0x14; (*bar) += 4) {
-		pci_read_config_dword(pcidev, *bar, &base);
-		if (!(base & 0x1)) {
-			pci_write_config_dword(pcidev, *bar, 0xFFFFFFFF);
-			pci_read_config_dword(pcidev, *bar, &size);
-			size = ~(size & ~0xFF) + 1;
-			if (size >= MAX_BIOSLEN){
-				pci_write_config_dword(pcidev, *bar, 0);
-				base = base & ~0xFF;
-				base = pci_mem_to_phys(pcidev,base);
-				return base;
-			}
-		}
-	}	
-	*/
-
-	return 0;
 }
 
 /****************************************************************************
@@ -389,18 +345,8 @@ int BootVideoCardBIOS(pci_dev_t pcidev, int cleanUp)
 }
 
 static int vga_post_module_init(void) {
-	struct pci_dev *pdev = NULL;
-
-	for_each_pci_dev(pdev) {
-		if ((pdev->class >> 8) == PCI_CLASS_DISPLAY_VGA) {
-			printk(KERN_INFO "pci->class = %x\n", pdev->class);
-			break;
-		}
-	}
-	//local_irq_disable();
-	//BootVideoCardBIOS(pdev,  0);
-	//local_irq_enable();
 	printk("vga_post ok\n");
+	return 0;
 }
 
 static void vga_post_module_exit(void) {
