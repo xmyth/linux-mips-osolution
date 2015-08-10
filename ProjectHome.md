@@ -1,0 +1,1 @@
+The latest kernel porting for osolution's STLS2E/STLS2F boards, based on the linux-mips git tree.
